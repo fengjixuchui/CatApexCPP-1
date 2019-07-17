@@ -68,7 +68,7 @@ void startDraw() {
 	ImGui_ImplWin32_Init(myHWND);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 	io.Fonts->AddFontDefault();
-	font = io.Fonts->AddFontFromFileTTF(R"(c:\Windows\Fonts\Dengb.ttf)", 20.0f, NULL,
+	font = io.Fonts->AddFontFromFileTTF(R"(c:\Windows\Fonts\msyh.ttc)", 20.0f, NULL,
 		io.Fonts->GetGlyphRangesChineseFull());
 	IM_ASSERT(font != NULL);
 
