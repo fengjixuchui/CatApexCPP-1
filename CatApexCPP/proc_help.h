@@ -70,6 +70,7 @@ typedef struct __AppConfigs {
 	bool ZiDongMiaoZhun;
 	float ZiMiaoFanWei;
 	int MiaoZhunReJian;
+	bool DanwuSanShe;
 } AppConfigs;
 
 typedef struct ItemInfo {
@@ -130,6 +131,7 @@ extern __int64 TempPoint;
 extern __int64 ArrayPoint;
 extern __int64 MySelfPoint;
 extern __int64 EntityListPoint;
+extern __int64 MouseAddr;
 
 //data
 extern int MyTeam;

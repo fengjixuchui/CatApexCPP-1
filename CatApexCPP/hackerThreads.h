@@ -8,9 +8,7 @@
 #endif //CATAPEXCPP_HACKERTHREADS_H
 
 DWORD WINAPI InfoThread(LPVOID lpParam);
-
 DWORD WINAPI EntityManager(LPVOID lpParam);
-
 DWORD WINAPI SuperAim(LPVOID lpParam);
-
 DWORD WINAPI StartDraw(LPVOID lpParam);
+DWORD WINAPI HentaiThread(LPVOID lpParam);

@@ -39,7 +39,7 @@ void startDraw() {
 	::RegisterClassEx(&wc);
 	myHWND = ::CreateWindowEx(262190,
 		wc.lpszClassName,
-		_T("隔热隔热谈话任何一条体育"),
+		_T("外挂窗口,Apex外挂,EAC你来封我号呀"),
 		2147483648,
 		0,
 		0,
@@ -68,7 +68,7 @@ void startDraw() {
 	ImGui_ImplWin32_Init(myHWND);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 	io.Fonts->AddFontDefault();
-	font = io.Fonts->AddFontFromFileTTF(R"(c:\Windows\Fonts\msyh.ttc)", 20.0f, NULL,
+	font = io.Fonts->AddFontFromFileTTF(R"(c:\Windows\Fonts\msyhbd.ttc)", 16.0f, NULL,
 		io.Fonts->GetGlyphRangesChineseFull());
 	IM_ASSERT(font != NULL);
 

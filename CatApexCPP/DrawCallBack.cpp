@@ -12,9 +12,7 @@
 std::vector<void *> needFrees;
 
 void drawMenu();
-
 void drawEntity();
-
 using namespace std;
 
 __int64 lastPlayer = 0;
@@ -31,53 +29,60 @@ void drawMenu() {
 	if (!appConfigs.MenuStatus) {
 		return;
 	}
-	drawStrockText(ImGui::GetOverlayDrawList(), font, 14, { 1, 1 }, { 0, 255, 255 }, u8"CatApex-CPPVersion");
+	drawStrockText(ImGui::GetOverlayDrawList(), font, myFontSize, { 1, 1 }, { 0, 255, 255 }, u8"CatApex-CPPVersion");
 	ImDrawList *drawList = ImGui::GetOverlayDrawList();
 	int menuTop = (gameRect.bottom - 100) / 2;
 	int menuIndex = 0;
-	drawStrockText(drawList, font, 14, { 10, (float)menuTop }, { 0, 255, 255 },
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },
 		u8"CatApex C++ 64位版本 [Home]键显隐");
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.FangKuang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"方框透视[F1]");
-	drawStrockText(drawList, font, 14, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.FangKuang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		appConfigs.FangKuang ? u8"开" : u8"关");
 
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 30, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 30, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.FangKuang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"透视范围[F2]");
-	drawStrockText(drawList, font, 14, { 140, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 140, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.FangKuang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		to_string((int)appConfigs.TouShiFanWei).c_str());
 
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.WuPingTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"物品透视[F3]");
-	drawStrockText(drawList, font, 14, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.WuPingTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		appConfigs.WuPingTouShi ? u8"开" : u8"关");
 
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 30, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 30, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.WuPingTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"物品范围[F4]");
-	drawStrockText(drawList, font, 14, { 140, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 140, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.WuPingTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		to_string((int)appConfigs.WuPingFanWei).c_str());
 
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.PeiJianTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"隐藏喷子和配件[F5]");
-	drawStrockText(drawList, font, 14, { 150, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 150, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.PeiJianTouShi ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		appConfigs.PeiJianTouShi ? u8"开" : u8"关");
 
 	++menuIndex;
-	drawStrockText(drawList, font, 14, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.ZiDongMiaoZhun ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"右键自瞄[F6]");
-	drawStrockText(drawList, font, 14, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
 		appConfigs.ZiDongMiaoZhun ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		appConfigs.ZiDongMiaoZhun ? u8"开" : u8"关");
+
+	++menuIndex;
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+		appConfigs.DanwuSanShe ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"弹无散射[F7]");
+	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+		appConfigs.DanwuSanShe ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
+		appConfigs.DanwuSanShe ? u8"开" : u8"关");
 
 }
 
@@ -130,7 +135,7 @@ void drawEntity() {
 				}
 			}
 			itemLocals.emplace_back(BoxX, BoxY);
-			drawStrockText(drawList, font, 14, { BoxX, BoxY }, entity.color, buff);
+			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
 			needFrees.emplace_back(buff);
 		}
 		else if (entity.type == 1) {
@@ -186,9 +191,9 @@ void drawEntity() {
 				else {
 					sprintf(buff, fNormal, (int)distance, armor, blood);
 				}
-				drawStrockText(drawList, font, 14, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
+				drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
 					playerColor, buff);
-				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.2f,
+				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.1f,
 					playerColor);
 				needFrees.emplace_back(buff);
 			}

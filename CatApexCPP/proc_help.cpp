@@ -86,7 +86,7 @@ void initColor() {
 }
 
 void initConfig() {
-	appConfigs = { true, true, 600.f, true, true, 50.f, true, true, true, false, true, true, 150.f, 2 };
+	appConfigs = { true, true, 600.f, true, true, 50.f, true, true, true, false, true, true, 150.f, 2, true };
 	DWORD tid = 0;
 	HANDLE tHandle = CreateThread(NULL, 0, KeyBoardHookThread, 0, 0, &tid);
 	CloseHandle(tHandle);
@@ -142,6 +142,9 @@ LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lP
 		case VK_F6:
 			appConfigs.ZiDongMiaoZhun = !appConfigs.ZiDongMiaoZhun;
 			break;
+		case VK_F7:
+			appConfigs.DanwuSanShe = !appConfigs.DanwuSanShe;
+			break;
 		case VK_HOME:
 			appConfigs.MenuStatus = !appConfigs.MenuStatus;
 			break;
@@ -170,6 +173,8 @@ void startThreads() {
 	HANDLE tHandle = CreateThread(NULL, 0, InfoThread, 0, 0, &tid);
 	CloseHandle(tHandle);
 	tHandle = CreateThread(NULL, 0, EntityManager, 0, 0, &tid);
+	CloseHandle(tHandle);
+	tHandle = CreateThread(NULL, 0, HentaiThread, 0, 0, &tid);
 	CloseHandle(tHandle);
 	hAimThread = CreateThread(NULL, 0, SuperAim, 0, 0, &tid);
 

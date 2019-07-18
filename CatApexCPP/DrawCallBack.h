@@ -6,5 +6,5 @@
 #define CATAPEXCPP_DRAWCALLBACK_H
 
 #endif //CATAPEXCPP_DRAWCALLBACK_H
-
+#define myFontSize			16
 void draw();
