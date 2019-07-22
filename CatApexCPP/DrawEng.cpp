@@ -35,26 +35,26 @@ void CleanupRenderTarget();
 void startDraw() {
 
 	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_HREDRAW, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-					 _T("RoamingciisrcRNII_fedwfwf5"), NULL };
+					 _T("DesktopLyrics"), NULL };
 	::RegisterClassEx(&wc);
-	myHWND = ::CreateWindowEx(262190,
+	myHWND = ::CreateWindowEx(WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
 		wc.lpszClassName,
-		_T("外挂窗口,Apex外挂,EAC你来封我号呀"),
-		2147483648,
+		_T("桌面歌词"),
+		WS_OVERLAPPED,
 		0,
 		0,
-		1920,
-		1080,
+		1,
+		1,
 		NULL,
 		NULL,
 		GetModuleHandle(NULL),
 		NULL);
 	::ShowWindow(myHWND, 10);
 	::UpdateWindow(myHWND);
-	SetWindowLongA(myHWND, -20, 524288 | GetWindowLongA(myHWND, -20));
+	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | GetWindowLongA(myHWND, GWL_EXSTYLE));
+	SetWindowLongA(myHWND, GWL_STYLE, WS_POPUP);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
-	SetLayeredWindowAttributes(myHWND, 0, 255, 2);
 	if (!CreateDeviceD3D(myHWND)) {
 		CleanupDeviceD3D();
 		::UnregisterClass(wc.lpszClassName, wc.hInstance);

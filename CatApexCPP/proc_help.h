@@ -39,8 +39,6 @@
 #define m_flBulletSpeed               0x1C24
 #define m_flWeaponSpread1             0x1370
 #define m_flWeaponSpread2             0x1380
-#define CheckSum                     0x88C4F0
-
 #define m_EyePosition                  0x4224
 
 typedef struct __ColorStruct {

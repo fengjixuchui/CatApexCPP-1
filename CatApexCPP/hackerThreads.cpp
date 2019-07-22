@@ -72,17 +72,26 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	EntityListPoint = hGameModule + CEntityList;
 	bool a = false;
 	char *apexName = (char *)calloc(32, 32);
-	__int64 cuPoint = 0;
+	__int64 cuPoint;
+	int len = 65536 << 5;
+	char * EntityListMem = (char *)malloc(len + 1);
+	char * EntityMemCached = (char *)malloc(0x2048);
 	while (!a) {
-		Sleep(1500);
+		Sleep(500);
+		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
+ 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
 		for (int i = 0; i < 65535; ++i) {
-			readMem((HANDLE)gamePid, EntityListPoint + (i << 5), 8, &cuPoint);
+			memcpy(&cuPoint, &EntityListMem[i << 5], sizeof(cuPoint));
 			if (cuPoint < 1000000) {
 				continue;
 			}
 			__int64 apexNamePoint = 0;
-			readMem((HANDLE)gamePid, cuPoint + m_iSignifierName, 8, &apexNamePoint);
+			memset(EntityMemCached, 0, 0x2048);
+
+			readMem((HANDLE)gamePid, cuPoint, 0x2048, EntityMemCached);
+			memcpy(&apexNamePoint, &EntityMemCached[m_iSignifierName], sizeof(apexNamePoint));
+
 			if (apexNamePoint < 1000000) {
 				continue;
 			}
@@ -90,7 +99,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			if (apexName[0] == 'p') {
 				if (!memcmp(apexName, "prop_survival", 13)) {
 					int flag = 0;
-					readMem((HANDLE)gamePid, cuPoint + m_customScriptInt, 4, &flag);
+					memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
 					ItemInfo item = entityNames[flag];
 					if (item.color == 0) {
 						continue;
@@ -107,7 +116,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 						continue;
 					}
 					int team = 0;
-					readMem((HANDLE)gamePid, cuPoint + 1008, 4, &team);
+					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
 					if (team == MyTeam) {
 						continue;
 					}
@@ -115,7 +124,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 						continue;
 					}
 					int blood = 0;
-					readMem((HANDLE)gamePid, cuPoint + m_iHealth, 4, &blood);
+					memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
 					if (blood == 0) {
 						continue;
 					}
@@ -156,6 +165,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D aimLocal = {};
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
+		VectorVec3D.x *= 0.65f;
+		VectorVec3D.y *= 0.65f;
+		VectorVec3D.z *= 0.40f;
+		aimLocal.z += 4.00f;
 		readVec3D(aimEntity + m_EyePosition, &aimLocal);
 		readVec3D(MouseAddr - 28, &myLocal);
 		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
@@ -170,11 +183,19 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx*xx + yy*yy + zz*zz);
-		float flTime = distance / bulletSpeed;
+		float flTime = (distance - 15) / bulletSpeed ;
 		if (bulletSpeed > 10) {
 			aimLocal.x += VectorVec3D.x * flTime;
 			aimLocal.y += VectorVec3D.y * flTime;
 			aimLocal.z += VectorVec3D.z * flTime;
+			if (distance > 15)
+			{
+				float bullet_gv = 0;
+				readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
+				float flyTime2 = flTime * ((distance - 15) / distance);
+				float xx2 = 375 * bullet_gv * (flyTime2 * flyTime2);
+				aimLocal.z += xx2;
+			}
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -183,7 +204,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * 57.29f);
 		writeMem(gamePid, MouseAddr, 4, &tb);
 		writeMem(gamePid, MouseAddr + 4, 4, &lf);
-		Sleep(2);
+		if (GetAsyncKeyState(VK_LBUTTON) != 0)
+		{
+			mouse_event(1, 0, 1.8f, 0, 0);
+		}
+		Sleep(1);
 	}
 	return 0;
 }

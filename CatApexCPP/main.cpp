@@ -17,7 +17,7 @@ int main() {
 	initConfig();
 	initMenu();
 	printf("正在安装驱动.....\n\n");
-	const char *mySys = "C:\catdrv.sys";
+	const char *mySys = "C:\\catdrv.sys";
 	bool hDriver = loadDrv(mySys);
 	printf("%s\n", mySys);
 	if (!hDriver) {

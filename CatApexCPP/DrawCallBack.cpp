@@ -95,7 +95,7 @@ void drawEntity() {
 		50, 2.0f);
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi &&
-			(entity.flag >= 54 || entity.flag == 20 || entity.flag == 23 || entity.flag == 30)) {
+			(entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) {
 			continue;
 		}
 		Vec3D entityLocal = {};
@@ -160,7 +160,7 @@ void drawEntity() {
 				playerColor = ImColor({ 244, 121, 131 });
 			}
 			else {
-				playerColor = ImColor({ 14, 184, 58 });
+				playerColor = ImColor({ 0xff, 0xff, 0x00 });
 			}
 			int blood = 0;
 			int armor = 0;
@@ -177,8 +177,8 @@ void drawEntity() {
 			if (appConfigs.FangKuang) {
 
 
-				const char *fNormal = u8"[%d]¼×:%d Ñª:%d";
-				const char *fName = u8"[%d]¼×:%d Ñª:%d [%s]";
+				const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ";
+				const char *fName = u8"[%d] ¼×:%d Ñª:%d ¡¾%s¡¿";
 
 
 				char *buff = (char *)calloc(512, 512);
@@ -249,7 +249,7 @@ void drawEntity() {
 	}
 
 	if (appConfigs.ZiDongMiaoZhun) {
-		if (GetAsyncKeyState(appConfigs.MiaoZhunReJian) != 0) {
+		if (GetAsyncKeyState(appConfigs.MiaoZhunReJian) != 0 || GetAsyncKeyState(VK_CONTROL)) {
 			if (aimEntity > 0) {
 				aim = true;
 				if (aimThreadStop) {
