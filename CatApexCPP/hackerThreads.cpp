@@ -165,10 +165,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D aimLocal = {};
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
-		VectorVec3D.x *= 0.65f;
-		VectorVec3D.y *= 0.65f;
-		VectorVec3D.z *= 0.40f;
-		aimLocal.z += 4.00f;
+		VectorVec3D.x *= 0.73f;
+		VectorVec3D.y *= 0.73f;
+		VectorVec3D.z *= 0.42f;
+		aimLocal.z += 3.40f;
 		readVec3D(aimEntity + m_EyePosition, &aimLocal);
 		readVec3D(MouseAddr - 28, &myLocal);
 		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
