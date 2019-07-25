@@ -31,6 +31,12 @@ int windowW;
 int windowH;
 POINT CentWindow;
 
+int weaponEntityid = 0;
+__int64 weaponEntityPoint = 0;
+float bulletSpeed = 0;
+bool bulledSpeedGeted = false;
+float bullet_gv = 0;
+
 
 DWORD WINAPI InfoThread(LPVOID lpParam) {
 	CoInitialize(0);
@@ -148,19 +154,24 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	while (!a) {
 		if (!aim) {
 			aimThreadStop = true;
+			bulledSpeedGeted = false;
 			SuspendThread(hAimThread);
 		}
-		int weaponEntityid = 0;
-		__int64 weaponEntityPoint = 0;
-		readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
-		weaponEntityid &= 0xFFFF;
-		if (weaponEntityid > 0 && weaponEntityid < 65535) {
-			readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid * 32, 8, &weaponEntityPoint);
-		}
-		float bulletSpeed = 0;
-		readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
-		if (bulletSpeed == 0) {
-			bulletSpeed = 15000;
+
+		if (!bulledSpeedGeted)
+		{
+			readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+			weaponEntityid &= 0xFFFF;
+			if (weaponEntityid > 0 && weaponEntityid < 65535) {
+				readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid << 5, 8, &weaponEntityPoint);
+			}
+
+			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
+			if (bulletSpeed == 0) {
+				bulletSpeed = 15000;
+			}
+			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
+			bulledSpeedGeted = true;
 		}
 		Vec3D aimLocal = {};
 		Vec3D myLocal = {};
@@ -168,47 +179,34 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		VectorVec3D.x *= 0.73f;
 		VectorVec3D.y *= 0.73f;
 		VectorVec3D.z *= 0.42f;
-		aimLocal.z += 3.40f;
+		aimLocal.z += 4.2f;
 		readVec3D(aimEntity + m_EyePosition, &aimLocal);
 		readVec3D(MouseAddr - 28, &myLocal);
 		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
-
-		if (aimLocal.x == 0 && aimLocal.y == 0 && aimLocal.z == 0) {
-			continue;
-		}
-		if (myLocal.x == 0 && myLocal.y == 0 && myLocal.z == 0) {
-			continue;
-		}
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx*xx + yy*yy + zz*zz);
-		float flTime = (distance - 15) / bulletSpeed ;
-		if (bulletSpeed > 10) {
+		float flTime = (distance - 15) / bulletSpeed;
+		if (bulletSpeed > 10 && distance > 15) {
 			aimLocal.x += VectorVec3D.x * flTime;
 			aimLocal.y += VectorVec3D.y * flTime;
 			aimLocal.z += VectorVec3D.z * flTime;
-			if (distance > 15)
-			{
-				float bullet_gv = 0;
-				readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
-				float flyTime2 = flTime * ((distance - 15) / distance);
-				float xx2 = 375 * bullet_gv * (flyTime2 * flyTime2);
-				aimLocal.z += xx2;
-			}
+			float flyTime2 = flTime * ((distance - 15) / distance);
+			float xx2 = 375 * bullet_gv * (flyTime2 * flyTime2);
+			aimLocal.z += xx2;
 		}
-		xx = aimLocal.x - myLocal.x;
-		yy = aimLocal.y - myLocal.y;
-		zz = aimLocal.z - myLocal.z;
-		float lf = atan2f(yy, xx) * 57.29f;
-		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * 57.29f);
-		writeMem(gamePid, MouseAddr, 4, &tb);
-		writeMem(gamePid, MouseAddr + 4, 4, &lf);
-		if (GetAsyncKeyState(VK_LBUTTON) != 0)
+		readWorldArray(&worldArray);
+		float ViewW = worldArray[3][0] * aimLocal.x + worldArray[3][1] * aimLocal.y + worldArray[3][2] * aimLocal.z + worldArray[3][3];
+		if (ViewW < 0.01f)
 		{
-			mouse_event(1, 0, 1.8f, 0, 0);
+			continue;
 		}
-		Sleep(1);
+		ViewW = 1 / ViewW;
+		float BoxX = CentWindow.x + (worldArray[0][0] * aimLocal.x + worldArray[0][1] * aimLocal.y + worldArray[0][2] * aimLocal.z + worldArray[0][3]) * ViewW * CentWindow.x;
+		float BoxY = CentWindow.y - (worldArray[1][0] * aimLocal.x + worldArray[1][1] * aimLocal.y + worldArray[1][2] * aimLocal.z + worldArray[1][3]) * ViewW * CentWindow.y;
+		mouse_event(1, BoxX - CentWindow.x, BoxY - CentWindow.y, 0, 0);
+		Sleep(30);
 	}
 	return 0;
 }

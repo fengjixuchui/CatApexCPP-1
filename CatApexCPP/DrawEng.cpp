@@ -40,19 +40,18 @@ void startDraw() {
 	myHWND = ::CreateWindowEx(WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
 		wc.lpszClassName,
 		_T("×ÀÃæ¸è´Ê"),
-		WS_OVERLAPPED,
+		WS_POPUP,
 		0,
 		0,
-		1,
-		1,
+		1920,
+		1080,
 		NULL,
 		NULL,
 		GetModuleHandle(NULL),
 		NULL);
 	::ShowWindow(myHWND, 10);
 	::UpdateWindow(myHWND);
-	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | GetWindowLongA(myHWND, GWL_EXSTYLE));
-	SetWindowLongA(myHWND, GWL_STYLE, WS_POPUP);
+	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
 	if (!CreateDeviceD3D(myHWND)) {
