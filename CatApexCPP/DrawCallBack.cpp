@@ -107,12 +107,8 @@ void drawEntity() {
 		{
 			continue;
 		}
-		float distance = ViewW / 30;
 		ViewW = 1 / ViewW;
-		if (entity.type == 0 && appConfigs.WuPingTouShi) {
-			if (distance > appConfigs.WuPingFanWei) {
-				continue;
-			}
+		if (entity.type == 0) {
 			float BoxX = CentWindow.x +
 				(worldArray[0][0] * entityLocal.x + worldArray[0][1] * entityLocal.y +
 					worldArray[0][2] * entityLocal.z +
@@ -124,9 +120,9 @@ void drawEntity() {
 			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 				continue;
 			}
-			const char *fNormal = "%s| %d";
+			const char *fNormal = "%s| %.1f";
 			char *buff = (char *)calloc(128, 128);
-			sprintf(buff, fNormal, entity.name, (int)distance);
+			sprintf(buff, fNormal, entity.name, entity.distance);
 		startFor:
 			for (ImVec2 local : itemLocals) {
 				if (local.x == BoxX && local.y == BoxY) {
@@ -171,25 +167,25 @@ void drawEntity() {
 			if (status != 0) {
 				playerColor = ImColor({ 141, 75, 187 });
 			}
-			if (blood <= 0 || blood > 100 || distance > appConfigs.TouShiFanWei) {
+			if (blood <= 0 || blood > 100) {
 				continue;
 			}
 			if (appConfigs.FangKuang) {
 
 
-				const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ";
-				const char *fName = u8"[%d] ¼×:%d Ñª:%d ¡¾%s¡¿";
+				const char *fNormal = u8"[%.1f] ¼×:%d Ñª:%d ";
+				const char *fName = u8"[%.1f] ¼×:%d Ñª:%d ¡¾%s¡¿";
 
 
 				char *buff = (char *)calloc(512, 512);
 
 				if (entity.point == lastPlayer) {
 					char *pName = readPlayerName(entity.zc);
-					sprintf(buff, fName, (int)distance, armor, blood, pName);
+					sprintf(buff, fName, entity.distance, armor, blood, pName);
 					free(pName);
 				}
 				else {
-					sprintf(buff, fNormal, (int)distance, armor, blood);
+					sprintf(buff, fNormal, entity.distance, armor, blood);
 				}
 				drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
 					playerColor, buff);
@@ -207,10 +203,10 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (distance < 12) {
+				if (entity.distance < 12) {
 					insidePlayer.emplace_back(entity);
 				}
-				if (showDistance < appConfigs.ZiMiaoFanWei && distance < appConfigs.TouShiFanWei) {
+				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {
 					if (showDistance < losDistance || losDistance == 0) {
 						losDistance = showDistance;
 						aimEntity = entity.point;

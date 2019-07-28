@@ -81,12 +81,14 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	__int64 cuPoint;
 	int len = 65536 << 5;
 	char * EntityListMem = (char *)malloc(len + 1);
-	char * EntityMemCached = (char *)malloc(0x2048);
+	char * EntityMemCached = (char *)malloc(0x4230);
 	while (!a) {
 		Sleep(500);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
  		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
+		Vec3D myLocal = {};
+		readVec3D(MouseAddr - 28, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
 			memcpy(&cuPoint, &EntityListMem[i << 5], sizeof(cuPoint));
 			if (cuPoint < 1000000) {
@@ -95,7 +97,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			__int64 apexNamePoint = 0;
 			memset(EntityMemCached, 0, 0x2048);
 
-			readMem((HANDLE)gamePid, cuPoint, 0x2048, EntityMemCached);
+			readMem((HANDLE)gamePid, cuPoint, 0x4230, EntityMemCached);
 			memcpy(&apexNamePoint, &EntityMemCached[m_iSignifierName], sizeof(apexNamePoint));
 
 			if (apexNamePoint < 1000000) {
@@ -104,37 +106,58 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
 			if (apexName[0] == 'p') {
 				if (!memcmp(apexName, "prop_survival", 13)) {
+					if (! appConfigs.WuPingTouShi)
+					{
+						continue;
+					}
 					int flag = 0;
 					memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
 					ItemInfo item = entityNames[flag];
 					if (item.color == 0) {
 						continue;
 					}
-					ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, item };
+					Vec3D local = {};
+					memcpy(&local, &EntityMemCached[m_location], sizeof(local));
+					float xx = local.x - myLocal.x;
+					float yy = local.y - myLocal.y;
+					float zz = local.z - myLocal.z;
+					float distance = sqrt(xx * xx + yy * yy + zz * zz);
+					distance *= 0.01905f;
+					if (distance > appConfigs.WuPingFanWei)
+					{
+						continue;
+					}
+					ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
 
 					tempEntityList.emplace_back(entity);
 					continue;
 				}
 				else if (!memcmp(apexName, "player", 6)) {
 					Vec3D local = {};
-					readVec3D(cuPoint + m_location, &local);
+					memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
 					if (local.x == 0 || local.y == 0 || local.z == 0) {
 						continue;
 					}
 					int team = 0;
 					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
-					if (team == MyTeam) {
-						continue;
-					}
-					if (cuPoint == MySelfPoint) {
+					if (team == MyTeam || cuPoint == MySelfPoint) {
 						continue;
 					}
 					int blood = 0;
 					memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
-					if (blood == 0) {
+					if (blood <= 0 || blood > 100) {
 						continue;
 					}
-					ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i };
+					float xx = local.x - myLocal.x;
+					float yy = local.y - myLocal.y;
+					float zz = local.z - myLocal.z;
+					float distance = sqrt(xx * xx + yy * yy + zz * zz);
+					distance *= 0.01905f;
+					if (distance > appConfigs.TouShiFanWei)
+					{
+						continue;
+					}
+					ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance };
 					tempEntityList.emplace_back(entity);
 					continue;
 				}
@@ -151,10 +174,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	bool a = false;
 	aim = false;
 	aimEntity = 0;
+	int i = 0;
 	while (!a) {
 		if (!aim) {
 			aimThreadStop = true;
 			bulledSpeedGeted = false;
+			i = 0;
 			SuspendThread(hAimThread);
 		}
 
@@ -176,37 +201,60 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D aimLocal = {};
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
-		VectorVec3D.x *= 0.73f;
-		VectorVec3D.y *= 0.73f;
-		VectorVec3D.z *= 0.42f;
-		aimLocal.z += 4.2f;
 		readVec3D(aimEntity + m_EyePosition, &aimLocal);
+		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0)
+		{
+			continue;
+		}
 		readVec3D(MouseAddr - 28, &myLocal);
 		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
-		float distance = sqrt(xx*xx + yy*yy + zz*zz);
-		float flTime = (distance - 15) / bulletSpeed;
+		float distance = sqrt(xx * xx + yy*yy + zz*zz);
+		float flTime = (distance - 15) / bulletSpeed ;
 		if (bulletSpeed > 10 && distance > 15) {
-			aimLocal.x += VectorVec3D.x * flTime;
-			aimLocal.y += VectorVec3D.y * flTime;
-			aimLocal.z += VectorVec3D.z * flTime;
+			aimLocal.z += 1.f;
+			aimLocal.x += (VectorVec3D.x * flTime) * 0.65f;
+			aimLocal.y += (VectorVec3D.y * flTime) * 0.65f;
+			aimLocal.z += (VectorVec3D.z * flTime) * 0.65f;
 			float flyTime2 = flTime * ((distance - 15) / distance);
 			float xx2 = 375 * bullet_gv * (flyTime2 * flyTime2);
 			aimLocal.z += xx2;
 		}
-		readWorldArray(&worldArray);
-		float ViewW = worldArray[3][0] * aimLocal.x + worldArray[3][1] * aimLocal.y + worldArray[3][2] * aimLocal.z + worldArray[3][3];
-		if (ViewW < 0.01f)
+		xx = aimLocal.x - myLocal.x;
+		yy = aimLocal.y - myLocal.y;
+		zz = aimLocal.z - myLocal.z;
+		float lf = atan2f(yy, xx) * 57.29f;
+		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * 57.29f);
+
+		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0))
 		{
 			continue;
 		}
-		ViewW = 1 / ViewW;
-		float BoxX = CentWindow.x + (worldArray[0][0] * aimLocal.x + worldArray[0][1] * aimLocal.y + worldArray[0][2] * aimLocal.z + worldArray[0][3]) * ViewW * CentWindow.x;
-		float BoxY = CentWindow.y - (worldArray[1][0] * aimLocal.x + worldArray[1][1] * aimLocal.y + worldArray[1][2] * aimLocal.z + worldArray[1][3]) * ViewW * CentWindow.y;
-		mouse_event(1, BoxX - CentWindow.x, BoxY - CentWindow.y, 0, 0);
-		Sleep(30);
+
+		writeMem(gamePid, MouseAddr, 4, &tb);
+		writeMem(gamePid, MouseAddr + 4, 4, &lf);
+		if (++i % 20 == 0)
+		{
+			float AIMArray[4][4] = {
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0}
+			};
+			readWorldArray(&AIMArray);
+			float ViewW = AIMArray[3][0] * aimLocal.x + AIMArray[3][1] * aimLocal.y + AIMArray[3][2] * aimLocal.z + AIMArray[3][3];
+			if (ViewW < 0.01f)
+			{
+				continue;
+			}
+			ViewW = 1 / ViewW;
+			float BoxX = CentWindow.x + (AIMArray[0][0] * aimLocal.x + AIMArray[0][1] * aimLocal.y + AIMArray[0][2] * aimLocal.z + AIMArray[0][3]) * ViewW * CentWindow.x;
+			float BoxY = CentWindow.y - (AIMArray[1][0] * aimLocal.x + AIMArray[1][1] * aimLocal.y + AIMArray[1][2] * aimLocal.z + AIMArray[1][3]) * ViewW * CentWindow.y;
+			mouse_event(1, BoxX - CentWindow.x, BoxY - CentWindow.y, 0, 0);
+		}
+		Sleep(1);
 	}
 	return 0;
 }
@@ -216,22 +264,22 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	while (!a)
 	{
 		Sleep(1);
-		if (appConfigs.DanwuSanShe)
-		{
-			int weaponEntityid = 0;
-			__int64 weaponEntityPoint = 0;
-			readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
-			weaponEntityid &= 0xFFFF;
-			if (weaponEntityid > 0 && weaponEntityid < 65535) {
-				readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid * 32, 8, &weaponEntityPoint);
-			}
-			if (weaponEntityPoint > 0)
-			{
-				float NoSp = 0.0f;
-				writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread1, 4, &NoSp);
-				writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread2, 4, &NoSp);
-			}
-		}
+		//if (appConfigs.DanwuSanShe)
+		//{
+		//	int weaponEntityid = 0;
+		//	__int64 weaponEntityPoint = 0;
+		//	readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		//	weaponEntityid &= 0xFFFF;
+		//	if (weaponEntityid > 0 && weaponEntityid < 65535) {
+		//		readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid * 32, 8, &weaponEntityPoint);
+		//	}
+		//	if (weaponEntityPoint > 0)
+		//	{
+		//		float NoSp = 0.0f;
+		//		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread1, 4, &NoSp);
+		//		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread2, 4, &NoSp);
+		//	}
+		//}
 	}
 	return 0;
 }

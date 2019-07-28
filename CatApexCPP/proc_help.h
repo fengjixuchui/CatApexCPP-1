@@ -84,6 +84,7 @@ typedef struct EntityStruct {
 	char *apexName;
 	unsigned int color;
 	int zc;
+	float distance;
 	ApexItem item;
 } ApexEntity;
 
