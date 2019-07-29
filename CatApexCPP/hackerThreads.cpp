@@ -255,19 +255,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	bool a = false;
-	while (!a)
-	{
-		Sleep(1);
-		Vec3D punch = {};
-		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
-		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
-		{
-			punch.x *= -1;
-			punch.y *= -1;
-			punch.z *= -1;
-			writeVec3D(MouseAddr, &punch);
-		}
-	}
 	return 0;
 }
 
