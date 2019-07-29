@@ -36,7 +36,7 @@ int main() {
 		MessageBoxA(nullptr, "进程ID获取错误，请检查您的进程名是否为r5apex.exe", nullptr, 0);
 		return -1;
 	}
-	printf("进程ID: %d\n", gamePid);
+	printf("进程ID: %p\n", gamePid);
 	hGameModule = getBaseModule((HANDLE)gamePid);
 	printf("模块地址: %lld\n", hGameModule);
 	ShowWindow(hGameWind, 9);

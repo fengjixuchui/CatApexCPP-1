@@ -16,7 +16,7 @@ void startDraw();
 
 RECT getGameWindowInfo(HWND hWnd, RECT recinfo);
 
-void drawStrockText(ImDrawList *drawList, ImFont *font, int size, ImVec2 pos, ImColor col, const char *text);
+void drawStrockText(ImDrawList *drawList, ImFont *font, float size, ImVec2 pos, ImColor col, const char *text);
 
 void drawRectFilled(ImDrawList *drawList, ImVec4 rect, ImColor col);
 

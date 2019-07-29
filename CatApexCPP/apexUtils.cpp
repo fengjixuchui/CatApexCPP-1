@@ -10,6 +10,10 @@ void readVec3D(__int64 addr, Vec3D * vec3D) {
 	readMem((HANDLE)gamePid, addr, 12, vec3D);
 }
 
+void writeVec3D(__int64 addr, Vec3D * vec3D) {
+	writeMem((HANDLE)gamePid, addr, 12, vec3D);
+}
+
 char *readPlayerName(int index) {
 	__int64 nameArray = 0;
 	readMem((HANDLE)gamePid, hGameModule + NameList, 8, &nameArray);

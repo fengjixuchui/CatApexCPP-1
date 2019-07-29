@@ -54,31 +54,6 @@ DWORD GetProcessIDByName(const char *pName) {
 	return 0;
 }
 
-char *rand_str(char *str, const int len) {
-	srand(time(NULL));
-	int i;
-	for (i = 0; i < len; ++i) {
-		switch ((rand() % 3)) {
-		case 1:
-			str[i] = 'A' + rand() % 26;
-			break;
-		case 2:
-			str[i] = 'a' + rand() % 26;
-			break;
-		default:
-			str[i] = '0' + rand() % 10;
-			break;
-		}
-	}
-	str[++i] = '\0';
-	return str;
-}
-
-int getRandom(int a, int b) {
-	srand(time(NULL));
-	return (rand() % (b - a)) + a;
-}
-
 void initColor() {
 	colors = { ImColor({255, 255, 95}), ImColor({255, 0, 255}), ImColor({188, 102, 255}), ImColor({0, 191, 255}),
 			  ImColor({255, 255, 255}), ImColor({197, 219, 70}), ImColor({111, 205, 168}), ImColor({106, 221, 34}),
@@ -156,7 +131,7 @@ LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lP
 void initMenu() {
 	int ju = fontSize * 6;
 	menu_zuobian = 10;
-	menu_kuan = ju + fontSize * 2.65 + 10;
+	menu_kuan = ju + fontSize * 2.65f + 10;
 	menu_gao = fontSize * 13 + 7;
 	menu_fenge = 2;
 	menu_dingbian = 150;

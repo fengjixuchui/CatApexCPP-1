@@ -41,10 +41,10 @@ void startDraw() {
 		wc.lpszClassName,
 		_T("×ÀÃæ¸è´Ê"),
 		WS_POPUP,
-		0,
-		0,
-		1920,
-		1080,
+		gameRect.left,
+		gameRect.top,
+		gameRect.right,
+		gameRect.bottom,
 		NULL,
 		NULL,
 		GetModuleHandle(NULL),
@@ -194,7 +194,7 @@ RECT getGameWindowInfo(HWND hWnd, RECT recinfo) {
 	return recinfo;
 }
 
-void drawStrockText(ImDrawList *drawList, ImFont *font, int size, ImVec2 pos, ImColor col, const char *text) {
+void drawStrockText(ImDrawList *drawList, ImFont *font, float size, ImVec2 pos, ImColor col, const char *text) {
 	ImColor strockcol = IM_COL32(0.0f, 0.0f, 0.0f, 255.0f);
 	ImVec2 xL = pos;
 	ImVec2 xA = pos;
@@ -204,11 +204,11 @@ void drawStrockText(ImDrawList *drawList, ImFont *font, int size, ImVec2 pos, Im
 	xA.x = xA.x + 1;
 	yL.y = yL.y - 1;
 	yA.y = yA.y + 1;
-	drawList->AddText(font, size, xL, strockcol, text, text + strlen(text), 0);
-	drawList->AddText(font, size, xA, strockcol, text, text + strlen(text), 0);
-	drawList->AddText(font, size, yL, strockcol, text, text + strlen(text), 0);
-	drawList->AddText(font, size, yA, strockcol, text, text + strlen(text), 0);
-	drawList->AddText(font, size, pos, col, text, text + strlen(text), 0);
+	drawList->AddText(font, size, xL, strockcol, text, text + strlen(text), 0.f);
+	drawList->AddText(font, size, xA, strockcol, text, text + strlen(text), 0.f);
+	drawList->AddText(font, size, yL, strockcol, text, text + strlen(text), 0.f);
+	drawList->AddText(font, size, yA, strockcol, text, text + strlen(text), 0.f);
+	drawList->AddText(font, size, pos, col, text, text + strlen(text), 0.f);
 }
 
 void drawRectFilled(ImDrawList *drawList, ImVec4 rect, ImColor col) {
@@ -237,10 +237,10 @@ void drawFrame(ImDrawList *drawList, ImVec4 rect, float px, ImColor col) {
 }
 
 void drawLine(ImDrawList * drawList, ImVec4 rect, float px, ImColor col) {
-	int sx = rect.x + gameRect.left;
-	int sy = rect.y + gameRect.top;
-	int ex = rect.z + gameRect.left;
-	int ey = rect.w + gameRect.top;
-	drawList->AddLine({ (float)sx, (float)sy }, { (float)ex, (float)ey }, col, px);
+	float sx = rect.x + gameRect.left;
+	float sy = rect.y + gameRect.top;
+	float ex = rect.z + gameRect.left;
+	float ey = rect.w + gameRect.top;
+	drawList->AddLine({ sx, sy }, { ex, ey }, col, px);
 
 }

@@ -56,7 +56,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		ClientToScreen(hGameWind, &gamePoint);
 		GetClientRect(hGameWind, &gameRect);
 		MoveWindow(myHWND, gamePoint.x, gamePoint.y, gameRect.right, gameRect.bottom, true);
-
 		windowW = gameRect.right;
 		windowH = gameRect.bottom;
 		CentWindow.x = windowW / 2;
@@ -83,7 +82,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	char * EntityListMem = (char *)malloc(len + 1);
 	char * EntityMemCached = (char *)malloc(0x4230);
 	while (!a) {
-		Sleep(500);
+		Sleep(200);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
  		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
@@ -140,7 +139,11 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					}
 					int team = 0;
 					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
-					if (team == MyTeam || cuPoint == MySelfPoint) {
+					if (team == MyTeam) {
+						continue;
+					}
+					if (cuPoint == MySelfPoint)
+					{
 						continue;
 					}
 					int blood = 0;
@@ -188,7 +191,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
 			weaponEntityid &= 0xFFFF;
 			if (weaponEntityid > 0 && weaponEntityid < 65535) {
-				readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid << 5, 8, &weaponEntityPoint);
+				readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 			}
 
 			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
@@ -211,17 +214,17 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
-		float distance = sqrt(xx * xx + yy*yy + zz*zz);
-		float flTime = (distance - 15) / bulletSpeed ;
-		if (bulletSpeed > 10 && distance > 15) {
-			aimLocal.z += 1.f;
-			aimLocal.x += (VectorVec3D.x * flTime) * 0.65f;
-			aimLocal.y += (VectorVec3D.y * flTime) * 0.65f;
-			aimLocal.z += (VectorVec3D.z * flTime) * 0.65f;
-			float flyTime2 = flTime * ((distance - 15) / distance);
-			float xx2 = 375 * bullet_gv * (flyTime2 * flyTime2);
-			aimLocal.z += xx2;
+		float distance = sqrt(xx * xx + yy * yy + zz * zz);
+		float flTime = distance / bulletSpeed;
+		if (bulletSpeed > 10 && distance  * 0.01905f > 20) {
+			float js = distance * 0.01905f / 75;
+			if (js > 1) js = 1;
+			aimLocal.x += ((VectorVec3D.x * flTime) * 0.70f * js);
+			aimLocal.y += ((VectorVec3D.y * flTime) * 0.70f * js);
+			aimLocal.z += ((VectorVec3D.z * flTime) * 0.4f * js);
+			float xx2 = 360 * bullet_gv * (flTime * flTime) * js;
 		}
+		aimLocal.z -= 5.0f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -232,28 +235,19 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		{
 			continue;
 		}
-
-		writeMem(gamePid, MouseAddr, 4, &tb);
-		writeMem(gamePid, MouseAddr + 4, 4, &lf);
-		if (++i % 20 == 0)
+		Vec3D angle = { tb, lf, 0.f};
+		Vec3D punch = {};
+		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
+		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
 		{
-			float AIMArray[4][4] = {
-		{0, 0, 0, 0},
-		{0, 0, 0, 0},
-		{0, 0, 0, 0},
-		{0, 0, 0, 0}
-			};
-			readWorldArray(&AIMArray);
-			float ViewW = AIMArray[3][0] * aimLocal.x + AIMArray[3][1] * aimLocal.y + AIMArray[3][2] * aimLocal.z + AIMArray[3][3];
-			if (ViewW < 0.01f)
-			{
-				continue;
-			}
-			ViewW = 1 / ViewW;
-			float BoxX = CentWindow.x + (AIMArray[0][0] * aimLocal.x + AIMArray[0][1] * aimLocal.y + AIMArray[0][2] * aimLocal.z + AIMArray[0][3]) * ViewW * CentWindow.x;
-			float BoxY = CentWindow.y - (AIMArray[1][0] * aimLocal.x + AIMArray[1][1] * aimLocal.y + AIMArray[1][2] * aimLocal.z + AIMArray[1][3]) * ViewW * CentWindow.y;
-			mouse_event(1, BoxX - CentWindow.x, BoxY - CentWindow.y, 0, 0);
+			punch.x *= -1;
+			punch.y *= -1;
+			punch.z *= -1;
+			angle.x += punch.x;
+			angle.y += punch.y;
+			angle.z += punch.z;
 		}
+		writeVec3D(MouseAddr, &angle);
 		Sleep(1);
 	}
 	return 0;
@@ -264,28 +258,29 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	while (!a)
 	{
 		Sleep(1);
-		//if (appConfigs.DanwuSanShe)
-		//{
-		//	int weaponEntityid = 0;
-		//	__int64 weaponEntityPoint = 0;
-		//	readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
-		//	weaponEntityid &= 0xFFFF;
-		//	if (weaponEntityid > 0 && weaponEntityid < 65535) {
-		//		readMem((HANDLE)gamePid, EntityListPoint + weaponEntityid * 32, 8, &weaponEntityPoint);
-		//	}
-		//	if (weaponEntityPoint > 0)
-		//	{
-		//		float NoSp = 0.0f;
-		//		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread1, 4, &NoSp);
-		//		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread2, 4, &NoSp);
-		//	}
-		//}
+		Vec3D punch = {};
+		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
+		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
+		{
+			punch.x *= -1;
+			punch.y *= -1;
+			punch.z *= -1;
+			writeVec3D(MouseAddr, &punch);
+		}
 	}
 	return 0;
 }
 
 
 DWORD WINAPI StartDraw(LPVOID lpParam) {
+	gamePoint.x = 0;
+	gamePoint.y = 0;
+	gameRect.left = 0;
+	gameRect.top = 0;
+	gameRect.right = 0;
+	gameRect.bottom = 0;
+	ClientToScreen(hGameWind, &gamePoint);
+	GetClientRect(hGameWind, &gameRect);
 	startDraw();
 	return 0;
 }

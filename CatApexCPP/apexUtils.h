@@ -12,5 +12,6 @@ using std::wstring;
 void readWorldArray(void *array);
 
 void readVec3D(__int64 addr, Vec3D * vec3D);
+void writeVec3D(__int64 addr, Vec3D * vec3D);
 
 char *readPlayerName(int index);
