@@ -217,14 +217,14 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 20) {
-			float js = distance * 0.01905f / 75;
+			float js = distance * 0.01905f / 69;
 			if (js > 1) js = 1;
 			aimLocal.x += ((VectorVec3D.x * flTime) * 0.70f * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * 0.70f * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * 0.4f * js);
+			aimLocal.z += ((VectorVec3D.z * flTime) * 0.50f * js);
 			float xx2 = 360 * bullet_gv * (flTime * flTime) * js;
 		}
-		aimLocal.z -= 5.0f;
+		aimLocal.z -= 4.88f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
