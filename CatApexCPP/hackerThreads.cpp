@@ -132,7 +132,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					if (local.x == 0 || local.y == 0 || local.z == 0) continue;
 					int team = 0;
 					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
-					if (team == MyTeam) continue;w 
+					if (team == MyTeam) continue;
 					if (cuPoint == MySelfPoint) continue;
 					int blood = 0;
 					memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
