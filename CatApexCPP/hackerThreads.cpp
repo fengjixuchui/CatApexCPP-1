@@ -9,8 +9,8 @@
 
 using namespace std;
 
-POINT gamePoint;
-RECT gameRect;
+POINT gamePoint = {};
+RECT gameRect = {};
 __int64 TempPoint = 0;
 __int64 ArrayPoint = 0;
 __int64 MySelfPoint = 0;
@@ -47,12 +47,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		if (gameID == 0) {
 			exit(0);
 		}
-		gamePoint.x = 0;
-		gamePoint.y = 0;
-		gameRect.left = 0;
-		gameRect.top = 0;
-		gameRect.right = 0;
-		gameRect.bottom = 0;
 		ClientToScreen(hGameWind, &gamePoint);
 		GetClientRect(hGameWind, &gameRect);
 		MoveWindow(myHWND, gamePoint.x, gamePoint.y, gameRect.right, gameRect.bottom, true);
@@ -74,6 +68,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 DWORD WINAPI EntityManager(LPVOID lpParam) {
 	CoInitialize(0);
 	initEntityNames();
+	initBones();
 	EntityListPoint = hGameModule + CEntityList;
 	bool a = false;
 	char *apexName = (char *)calloc(32, 32);
@@ -134,32 +129,20 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				else if (!memcmp(apexName, "player", 6)) {
 					Vec3D local = {};
 					memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
-					if (local.x == 0 || local.y == 0 || local.z == 0) {
-						continue;
-					}
+					if (local.x == 0 || local.y == 0 || local.z == 0) continue;
 					int team = 0;
 					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
-					if (team == MyTeam) {
-						continue;
-					}
-					if (cuPoint == MySelfPoint)
-					{
-						continue;
-					}
+					if (team == MyTeam) continue;w 
+					if (cuPoint == MySelfPoint) continue;
 					int blood = 0;
 					memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
-					if (blood <= 0 || blood > 100) {
-						continue;
-					}
+					if (blood <= 0 || blood > 100) continue;
 					float xx = local.x - myLocal.x;
 					float yy = local.y - myLocal.y;
 					float zz = local.z - myLocal.z;
 					float distance = sqrt(xx * xx + yy * yy + zz * zz);
 					distance *= 0.01905f;
-					if (distance > appConfigs.TouShiFanWei)
-					{
-						continue;
-					}
+					if (distance > appConfigs.TouShiFanWei) continue;
 					ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance };
 					tempEntityList.emplace_back(entity);
 					continue;
@@ -201,10 +184,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
 			bulledSpeedGeted = true;
 		}
-		Vec3D aimLocal = {};
+		Vec3D entityLocal = {};
+		readVec3D(aimEntity + m_location, &entityLocal);
+		Vec3D aimLocal = GetBonePos(aimEntity, ͷ, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
-		readVec3D(aimEntity + m_EyePosition, &aimLocal);
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0)
 		{
 			continue;
@@ -215,21 +199,20 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
-		float flTime = distance / bulletSpeed;
+		float flTime = (distance - 20) / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 20) {
-			float js = distance * 0.01905f / 69;
+			float js = distance * 0.01905f / 75;
 			if (js > 1) js = 1;
-			aimLocal.x += ((VectorVec3D.x * flTime) * 0.70f * js);
-			aimLocal.y += ((VectorVec3D.y * flTime) * 0.70f * js);
+			aimLocal.x += ((VectorVec3D.x * flTime) * 0.65f * js);
+			aimLocal.y += ((VectorVec3D.y * flTime) * 0.65f * js);
 			aimLocal.z += ((VectorVec3D.z * flTime) * 0.50f * js);
-			float xx2 = 360 * bullet_gv * (flTime * flTime) * js;
+			aimLocal.y += 360 * bullet_gv * (flTime * flTime) * js * 0.85f;
 		}
-		aimLocal.z -= 4.88f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
-		float lf = atan2f(yy, xx) * 57.29f;
-		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * 57.29f);
+		float lf = atan2f(yy, xx) * rotation;
+		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
 
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0))
 		{
@@ -240,12 +223,9 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
 		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
 		{
-			punch.x *= -1;
-			punch.y *= -1;
-			punch.z *= -1;
-			angle.x += punch.x;
-			angle.y += punch.y;
-			angle.z += punch.z;
+			angle.x -= punch.x;
+			angle.y -= punch.y;
+			angle.z -= punch.z;
 		}
 		writeVec3D(MouseAddr, &angle);
 		Sleep(1);

@@ -15,7 +15,7 @@ HANDLE hDevice = NULL;
 
 bool connectDrv()
 {
-	hDevice = CreateFileA(DEVICE_NAME, 3221225472, NULL, NULL, 3, NULL, NULL);
+	hDevice = CreateFileA(DEVICE_NAME, 0xC0000000, NULL, NULL, 3, NULL, NULL);
 	if (hDevice == INVALID_HANDLE_VALUE)
 	{
 		return false;
@@ -63,23 +63,26 @@ DWORD64 getBaseModule(HANDLE proc)
 
 void readMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
-	PVOID tmpMemory = malloc(size);
-	memset(tmpMemory, 0, size);
-	RWStruct rs = { proc, tmpMemory, (DWORD64)size, addr };
+	if (IsBadWritePtr(data, size))
+	{
+		MessageBoxA(NULL, "RW ERROR", NULL, 0);
+		return;
+	}
+	RWStruct rs = { proc, data, (DWORD64)size, addr };
 	DWORD outSize;
 	DeviceIoControl(hDevice, IOCTL_IO_READ, &rs, sizeof(rs), NULL, 0, &outSize, 0);
-	memcpy(data, tmpMemory, size);
-	free(tmpMemory);
 }
 
 void writeMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
-	PVOID tmpMemory = malloc(size);
-	memcpy(tmpMemory, data, size);
-	RWStruct rs = { proc, tmpMemory, (DWORD64)size, addr };
+	if (IsBadReadPtr(data, size))
+	{
+		MessageBoxA(NULL, "RW ERROR", NULL, 0);
+		return;
+	}
+	RWStruct rs = { proc, data, (DWORD64)size, addr };
 	DWORD outSize;
 	DeviceIoControl(hDevice, IOCTL_IO_WRITE, &rs, sizeof(rs), NULL, 0, &outSize, 0);
-	free(tmpMemory);
 }
 
 void protect()

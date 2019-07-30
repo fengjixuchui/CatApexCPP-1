@@ -109,14 +109,18 @@ void drawEntity() {
 		}
 		ViewW = 1 / ViewW;
 		if (entity.type == 0) {
-			float BoxX = CentWindow.x +
-				(worldArray[0][0] * entityLocal.x + worldArray[0][1] * entityLocal.y +
-					worldArray[0][2] * entityLocal.z +
-					worldArray[0][3]) * ViewW * CentWindow.x;
-			float BoxY = CentWindow.y -
-				(worldArray[1][0] * entityLocal.x + worldArray[1][1] * entityLocal.y +
-					worldArray[1][2] * entityLocal.z +
-					worldArray[1][3]) * ViewW * CentWindow.y;
+			float BoxX = gamePoint.x + CentWindow.x +(
+				worldArray[0][0] * entityLocal.x + 
+				worldArray[0][1] * entityLocal.y +
+				worldArray[0][2] * entityLocal.z +
+				worldArray[0][3]
+				) * ViewW * CentWindow.x;
+			float BoxY = gamePoint.y + CentWindow.y -(
+				worldArray[1][0] * entityLocal.x + 
+				worldArray[1][1] * entityLocal.y +
+				worldArray[1][2] * entityLocal.z +
+				worldArray[1][3]
+				) * ViewW * CentWindow.y;
 			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 				continue;
 			}
@@ -135,37 +139,43 @@ void drawEntity() {
 			needFrees.emplace_back(buff);
 		}
 		else if (entity.type == 1) {
-			float BoxX = CentWindow.x +
-				(worldArray[0][0] * entityLocal.x + worldArray[0][1] * entityLocal.y +
-					worldArray[0][2] * entityLocal.z +
-					worldArray[0][3]) * ViewW * CentWindow.x;
-			float BoxY1 = CentWindow.y -
-				(worldArray[1][0] * entityLocal.x + worldArray[1][1] * entityLocal.y +
-					worldArray[1][2] * (entityLocal.z + 70) +
-					worldArray[1][3]) * ViewW * CentWindow.y;
-			float BoxY = CentWindow.y -
-				(worldArray[1][0] * entityLocal.x + worldArray[1][1] * entityLocal.y +
-					worldArray[1][2] * (entityLocal.z - 10) +
-					worldArray[1][3]) * ViewW * CentWindow.y;
+			float BoxX = gamePoint.x + CentWindow.x +(
+				worldArray[0][0] * entityLocal.x + 
+				worldArray[0][1] * entityLocal.y +
+				worldArray[0][2] * entityLocal.z +
+				worldArray[0][3]
+				) * ViewW * CentWindow.x;
+			float BoxY1 = gamePoint.y + CentWindow.y -(
+				worldArray[1][0] * entityLocal.x + 
+				worldArray[1][1] * entityLocal.y +
+				worldArray[1][2] * (entityLocal.z + 70) +
+				worldArray[1][3]
+				) * ViewW * CentWindow.y;
+			float BoxY = gamePoint.y + CentWindow.y -(
+				worldArray[1][0] * entityLocal.x +
+				worldArray[1][1] * entityLocal.y +
+				worldArray[1][2] * (entityLocal.z - 10) +
+				worldArray[1][3]
+				) * ViewW * CentWindow.y;
 			if (BoxX - (BoxY1 - BoxY) / 4 > windowW || BoxX - (BoxY1 - BoxY) / 4 < -70 || BoxY1 > windowH ||
 				BoxY1 < 0) {
 				continue;
 			}
 			ImColor playerColor;
 			if (lastPlayer == entity.point) {
-				playerColor = ImColor({ 244, 121, 131 });
+				playerColor = ImColor({ 0xff, 0x50, 0x80 });
 			}
 			else {
-				playerColor = ImColor({ 0xff, 0xff, 0x00 });
+				playerColor = ImColor({ 0x00, 0xff, 0xff });
 			}
 			int blood = 0;
 			int armor = 0;
 			int status = 0;
 			readMem((HANDLE)gamePid, entity.point + m_iHealth, 4, &blood);
-			readMem((HANDLE)gamePid, entity.point + m_shieldHealth, 4, &armor);
+			readMem((HANDLE)gamePid, entity.point + m_shieldHealth - 4, 4, &armor);
 			readMem((HANDLE)gamePid, entity.point + m_bleedoutState, 4, &status);
 			if (status != 0) {
-				playerColor = ImColor({ 141, 75, 187 });
+				playerColor = ImColor({ 0x90, 0x00, 0x255 });
 			}
 			if (blood <= 0 || blood > 100) {
 				continue;
@@ -191,6 +201,7 @@ void drawEntity() {
 					playerColor, buff);
 				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.1f,
 					playerColor);
+				DrawBone(drawList, entity.point, entityLocal, font, myFontSize, playerColor);
 				needFrees.emplace_back(buff);
 			}
 

@@ -59,11 +59,9 @@ void startDraw() {
 		::UnregisterClass(wc.lpszClassName, wc.hInstance);
 		return;
 	}
-	//IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
 	(void)io;
-	//ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(myHWND);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 	io.Fonts->AddFontDefault();
