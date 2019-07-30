@@ -10,7 +10,7 @@
 #include <hash_map>
 #include "imgui/imgui.h"
 
-#define rotation					57.29578f
+#define rotation					57.295779513082f
 
 #define CEntityList					0x1F1AC78
 #define CLocalEntity				0x22CE368
@@ -87,7 +87,7 @@ typedef struct EntityStruct {
 	char *apexName;
 	unsigned int color;
 	int zc;
-	float distance;
+	int distance;
 	ApexItem item;
 } ApexEntity;
 

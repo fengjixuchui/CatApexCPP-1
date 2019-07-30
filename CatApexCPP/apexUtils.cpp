@@ -20,11 +20,11 @@ void writeVec3D(__int64 addr, Vec3D * vec3D) {
 
 char *readPlayerName(int index) {
 	__int64 nameArray = 0;
-	readMem((HANDLE)gamePid, hGameModule + NameList, 8, &nameArray);
+	readMem((HANDLE)gamePid, hGameModule + NameList, sizeof(nameArray), &nameArray);
 	nameArray = nameArray + index * 8;
 	__int64 namePoint = 0;
-	readMem((HANDLE)gamePid, nameArray + 2560, 8, &namePoint);
-	char *name = (char *)calloc(256, 256);
+	readMem((HANDLE)gamePid, nameArray + 2560, sizeof(namePoint), &namePoint);
+	char *name = (char *)malloc(256);
 	readMem((HANDLE)gamePid, namePoint, 256, name);
 	return name;
 }
@@ -118,7 +118,6 @@ int GetEntityType(__int64 entityPoint) {
 	{
 		infoInit = true;
 		entityInfoName = (char *)malloc(80);
-		memset(entityInfoName, 0, 80);
 	}
 	readMem(gamePid, entityInfos + 4, 80, entityInfoName);
 	string infoName = string(entityInfoName, 80);
@@ -176,7 +175,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col);
+		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
 		lasteIndex = cuIndex;
 	}
 
@@ -184,7 +183,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col);
+		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
 		lasteIndex = cuIndex;
 	}
 
@@ -192,7 +191,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col);
+		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
 		lasteIndex = cuIndex;
 	}
 }

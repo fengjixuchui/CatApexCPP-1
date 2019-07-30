@@ -44,9 +44,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 	CentWindow = { 0, 0 };
 	while (!a) {
 		DWORD gameID = GetProcessIDByName("r5apex.exe");
-		if (gameID == 0) {
-			exit(0);
-		}
+		if (gameID == 0) exit(0);
 		ClientToScreen(hGameWind, &gamePoint);
 		GetClientRect(hGameWind, &gameRect);
 		MoveWindow(myHWND, gamePoint.x, gamePoint.y, gameRect.right, gameRect.bottom, true);
@@ -85,31 +83,22 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 		readVec3D(MouseAddr - 28, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
 			memcpy(&cuPoint, &EntityListMem[i << 5], sizeof(cuPoint));
-			if (cuPoint < 1000000) {
-				continue;
-			}
+			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
 			memset(EntityMemCached, 0, 0x2048);
 
 			readMem((HANDLE)gamePid, cuPoint, 0x4230, EntityMemCached);
 			memcpy(&apexNamePoint, &EntityMemCached[m_iSignifierName], sizeof(apexNamePoint));
 
-			if (apexNamePoint < 1000000) {
-				continue;
-			}
+			if (apexNamePoint < 1000000) continue;
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
 			if (apexName[0] == 'p') {
 				if (!memcmp(apexName, "prop_survival", 13)) {
-					if (! appConfigs.WuPingTouShi)
-					{
-						continue;
-					}
+					if (! appConfigs.WuPingTouShi) continue;
 					int flag = 0;
 					memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
 					ItemInfo item = entityNames[flag];
-					if (item.color == 0) {
-						continue;
-					}
+					if (item.color == 0) continue;
 					Vec3D local = {};
 					memcpy(&local, &EntityMemCached[m_location], sizeof(local));
 					float xx = local.x - myLocal.x;
@@ -117,16 +106,14 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					float zz = local.z - myLocal.z;
 					float distance = sqrt(xx * xx + yy * yy + zz * zz);
 					distance *= 0.01905f;
-					if (distance > appConfigs.WuPingFanWei)
-					{
-						continue;
-					}
+					if (distance > appConfigs.WuPingFanWei) continue;
 					ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
 
 					tempEntityList.emplace_back(entity);
 					continue;
 				}
-				else if (!memcmp(apexName, "player", 6)) {
+				else if (!memcmp(apexName, "player", 6))
+				{
 					Vec3D local = {};
 					memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
 					if (local.x == 0 || local.y == 0 || local.z == 0) continue;
@@ -189,10 +176,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D aimLocal = GetBonePos(aimEntity, ͷ, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
-		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0)
-		{
-			continue;
-		}
+		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
 		readVec3D(MouseAddr - 28, &myLocal);
 		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
 		float xx = aimLocal.x - myLocal.x;
@@ -215,10 +199,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float lf = atan2f(yy, xx) * rotation;
 		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
 
-		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0))
-		{
-			continue;
-		}
+		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
 		Vec3D angle = { tb, lf, 0.f};
 		Vec3D punch = {};
 		readVec3D(MySelfPoint + m_vecAimPunch, &punch);

@@ -91,22 +91,16 @@ void drawEntity() {
 	itemLocals.clear();
 	readWorldArray(&worldArray);
 	ImDrawList *drawList = ImGui::GetOverlayDrawList();
-	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 14, 184, 58 }),
-		50, 2.0f);
+	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 0x00, 0xff, 0xff }),
+		50, 1.2f);
 	for (ApexEntity entity : apexEntityList) {
-		if (appConfigs.PeiJianTouShi &&
-			(entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) {
-			continue;
-		}
+		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;
 		Vec3D entityLocal = {};
 		readVec3D(entity.point + m_location, &entityLocal);
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +
 			worldArray[3][3];
-		if (ViewW < 0.01)
-		{
-			continue;
-		}
+		if (ViewW < 0.01) continue;
 		ViewW = 1 / ViewW;
 		if (entity.type == 0) {
 			float BoxX = gamePoint.x + CentWindow.x +(
@@ -124,8 +118,9 @@ void drawEntity() {
 			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 				continue;
 			}
-			const char *fNormal = "%s| %.1f";
-			char *buff = (char *)calloc(128, 128);
+			const char *fNormal = "%s| %d";
+			char *buff = (char *)malloc(128);
+			memset(buff, 0, 128);
 			sprintf(buff, fNormal, entity.name, entity.distance);
 		startFor:
 			for (ImVec2 local : itemLocals) {
@@ -157,10 +152,8 @@ void drawEntity() {
 				worldArray[1][2] * (entityLocal.z - 10) +
 				worldArray[1][3]
 				) * ViewW * CentWindow.y;
-			if (BoxX - (BoxY1 - BoxY) / 4 > windowW || BoxX - (BoxY1 - BoxY) / 4 < -70 || BoxY1 > windowH ||
-				BoxY1 < 0) {
-				continue;
-			}
+			if (BoxX - (BoxY1 - BoxY) / 4 > windowW || BoxX - (BoxY1 - BoxY) / 4 < -70 || BoxY1 > windowH || BoxY1 < 0) continue;
+		
 			ImColor playerColor;
 			if (lastPlayer == entity.point) {
 				playerColor = ImColor({ 0xff, 0x50, 0x80 });
@@ -177,18 +170,16 @@ void drawEntity() {
 			if (status != 0) {
 				playerColor = ImColor({ 0x90, 0x00, 0x255 });
 			}
-			if (blood <= 0 || blood > 100) {
-				continue;
-			}
+			if (blood <= 0 || blood > 100) continue;
 			if (appConfigs.FangKuang) {
 
 
-				const char *fNormal = u8"[%.1f] ¼×:%d Ñª:%d ";
-				const char *fName = u8"[%.1f] ¼×:%d Ñª:%d ¡¾%s¡¿";
+				const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ";
+				const char *fName = u8"[%d] ¼×:%d Ñª:%d ¡¾%s¡¿";
 
 
-				char *buff = (char *)calloc(512, 512);
-
+				char *buff = (char *)malloc(512);
+				memset(buff, 0, 512);
 				if (entity.point == lastPlayer) {
 					char *pName = readPlayerName(entity.zc);
 					sprintf(buff, fName, entity.distance, armor, blood, pName);
@@ -205,9 +196,7 @@ void drawEntity() {
 				needFrees.emplace_back(buff);
 			}
 
-			if (status != 0) {
-				continue;
-			}
+			if (status != 0) continue;
 
 			if (aimThreadStop && appConfigs.ZiDongMiaoZhun) {
 				ImVec2 tmpPiont;
@@ -237,9 +226,7 @@ void drawEntity() {
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +
 			worldArray[3][3];
-		if (ViewW < 0.01f) {
-			continue;
-		}
+		if (ViewW < 0.01f) continue;
 		float distance = ViewW / 30;
 		if (losInside == 0 || distance < losInside) {
 			losInside = distance;
@@ -264,12 +251,14 @@ void drawEntity() {
 					ResumeThread(hAimThread);
 				}
 			}
-			else {
+			else
+			{
 				aim = false;
 				losDistance = 0;
 			}
 		}
-		else {
+		else
+		{
 			aim = false;
 			losDistance = 0;
 		}
