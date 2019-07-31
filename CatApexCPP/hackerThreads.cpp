@@ -78,7 +78,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 		Sleep(200);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
- 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
+		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
 		Vec3D myLocal = {};
 		readVec3D(MouseAddr - 28, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
@@ -94,7 +94,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
 			if (apexName[0] == 'p') {
 				if (!memcmp(apexName, "prop_survival", 13)) {
-					if (! appConfigs.WuPingTouShi) continue;
+					if (!appConfigs.WuPingTouShi) continue;
 					int flag = 0;
 					memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
 					ItemInfo item = entityNames[flag];
@@ -173,7 +173,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		}
 		Vec3D entityLocal = {};
 		readVec3D(aimEntity + m_location, &entityLocal);
-		Vec3D aimLocal = GetBonePos(aimEntity, ͷ, entityLocal);
+		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = {};
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
@@ -183,15 +183,15 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
-		float flTime = (distance - 20) / bulletSpeed;
+		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 30) {
 			float js = distance * 0.01905f / 100;
 			if (js > 1) js = 1;
-			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.93f);
-			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.93f);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.93f);
+			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.78f);
+			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.75f);
+			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.55f);
 			aimLocal.z += 360 * bullet_gv * (flTime * flTime) * js;
-			aimLocal.z += 0.5f;
+			aimLocal.z += 1.2f;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -200,7 +200,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
 
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
-		Vec3D angle = { tb, lf, 0.f};
+		Vec3D angle = { tb, lf, 0.f };
 		Vec3D punch = {};
 		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
 		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
