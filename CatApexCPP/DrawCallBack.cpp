@@ -192,7 +192,7 @@ void drawEntity() {
 					playerColor, buff);
 				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.1f,
 					playerColor);
-				DrawBone(drawList, entity.point, entityLocal, font, myFontSize, playerColor);
+				DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
 				needFrees.emplace_back(buff);
 			}
 

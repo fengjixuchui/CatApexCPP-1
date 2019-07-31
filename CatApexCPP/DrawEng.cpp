@@ -33,13 +33,21 @@ void CleanupRenderTarget();
 
 // Main code
 void startDraw() {
+	int clsLen = rand() % (25 - 12 + 1) + 12;
+	int wndLen = rand() % (20 - 15 + 1) + 15;
+	char * clsName = (char *) malloc(clsLen);
+	char * wndName = (char *)malloc(wndLen);
+	memset(clsName, 0, clsLen);
+	memset(wndName, 0, wndLen);
+	rand_str(clsName, clsLen - 1);
+	rand_str(wndName, wndLen - 1);
 
 	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_HREDRAW, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-					 _T("DesktopLyrics"), NULL };
+					 char2wchar_t(clsName), NULL };
 	::RegisterClassEx(&wc);
-	myHWND = ::CreateWindowEx(WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+	myHWND = ::CreateWindowEx(WS_EX_TOPMOST,
 		wc.lpszClassName,
-		_T("×ÀÃæ¸è´Ê"),
+		char2wchar_t(wndName),
 		WS_POPUP,
 		gameRect.left,
 		gameRect.top,
@@ -51,7 +59,7 @@ void startDraw() {
 		NULL);
 	::ShowWindow(myHWND, 10);
 	::UpdateWindow(myHWND);
-	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
+	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
 	if (!CreateDeviceD3D(myHWND)) {
@@ -68,7 +76,6 @@ void startDraw() {
 	font = io.Fonts->AddFontFromFileTTF(R"(c:\Windows\Fonts\msyhbd.ttc)", 16.0f, NULL,
 		io.Fonts->GetGlyphRangesChineseFull());
 	IM_ASSERT(font != NULL);
-
 	// Our state
 	ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.00f, 0.00f);
 	MSG msg;
@@ -94,6 +101,11 @@ void startDraw() {
 
 
 		g_pSwapChain->Present(1, 0);
+
+		if (needFrees.size() <= 0)
+		{
+			continue;
+		}
 
 		for (void * point : needFrees) {
 			free(point);

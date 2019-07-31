@@ -46,7 +46,6 @@ typedef struct __KeyBoardHookStruct {
 using namespace std;
 
 LRESULT CALLBACK keyboardHook(_In_  int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam);
-
 DWORD WINAPI KeyBoardHookThread(LPVOID lpParam);
 
 HHOOK keyHook = 0;
@@ -170,6 +169,36 @@ void startThreads() {
 
 }
 
+void rand_str(char *str, const int len)
+{
+	srand(time(NULL));
+	int i;
+	for (i = 0; i < len; ++i)
+	{
+		switch ((rand() % 3))
+		{
+		case 1:
+			str[i] = 'A' + rand() % 26;
+			break;
+		case 2:
+			str[i] = 'a' + rand() % 26;
+			break;
+		default:
+			str[i] = '0' + rand() % 10;
+			break;
+		}
+	}
+	str[++i] = '\0';
+}
+
+wchar_t* char2wchar_t(char* cstr) {
+	int len = MultiByteToWideChar(CP_ACP, 0, cstr, strlen(cstr), NULL, 0);
+	wchar_t * wstr = new wchar_t[len + 1];
+	MultiByteToWideChar(CP_ACP, 0, cstr, strlen(cstr), wstr, len);
+	wstr[len] = '\0';
+	return wstr;
+}
+
 void initEntityNames() {
 	entityNames[1] = { u8"AWM", colors.ShiShi };
 	entityNames[2] = { u8"¿ÕÍ¶Åç×Ó", colors.ShiShi };
@@ -281,7 +310,7 @@ void initEntityNames() {
 void initBones() {
 	//Ñ°Ñª
 	{
-		Ñ°Ñª[0][0] = Bones::Í·;
+		Ñ°Ñª[0][0] = Bones::head;
 		Ñ°Ñª[0][1] = Bones::¾±;
 		Ñ°Ñª[0][2] = Bones::ÐØ;
 		Ñ°Ñª[0][3] = Bones::¸¹;
@@ -315,7 +344,7 @@ void initBones() {
 	}
 	//Ö±²¼
 	{
-		Ö±²¼[0][0] = Bones::Í·;
+		Ö±²¼[0][0] = Bones::head;
 		Ö±²¼[0][1] = Bones::¾±;
 		Ö±²¼[0][2] = Bones::ÐØ;
 		Ö±²¼[0][3] = Bones::¸¹;
@@ -349,7 +378,7 @@ void initBones() {
 	}
 	//ÃüÂö
 	{
-		ÃüÂö[0][0] = Bones::Í·;
+		ÃüÂö[0][0] = Bones::head;
 		ÃüÂö[0][1] = Bones::¾±;
 		ÃüÂö[0][2] = Bones::ÐØ;
 		ÃüÂö[0][3] = Bones::¸¹;
@@ -383,7 +412,7 @@ void initBones() {
 	}
 	//Ì½Â·
 	{
-		Ì½Â·[0][0] = Bones::Í·;
+		Ì½Â·[0][0] = Bones::head;
 		Ì½Â·[0][1] = Bones::¾±;
 		Ì½Â·[0][2] = Bones::ÐØ;
 		Ì½Â·[0][3] = Bones::¸¹;
@@ -417,7 +446,7 @@ void initBones() {
 	}
 	//¶¯Á¦
 	{
-		¶¯Á¦[0][0] = Bones::Í·;
+		¶¯Á¦[0][0] = Bones::head;
 		¶¯Á¦[0][1] = Bones::¾±;
 		¶¯Á¦[0][2] = Bones::ÐØ;
 		¶¯Á¦[0][3] = Bones::¸¹;
@@ -451,7 +480,7 @@ void initBones() {
 	}
 	//¶ñÁé
 	{
-		¶ñÁé[0][0] = Bones::Í·;
+		¶ñÁé[0][0] = Bones::head;
 		¶ñÁé[0][1] = Bones::¾±;
 		¶ñÁé[0][2] = Bones::ÐØ;
 		¶ñÁé[0][3] = Bones::¸¹;
@@ -485,7 +514,7 @@ void initBones() {
 	}
 	//°à¼Ó
 	{
-		°à¼Ó[0][0] = Bones::Í·;
+		°à¼Ó[0][0] = Bones::head;
 		°à¼Ó[0][1] = Bones::¾±;
 		°à¼Ó[0][2] = Bones::ÐØ;
 		°à¼Ó[0][3] = Bones::¸¹;
@@ -519,7 +548,7 @@ void initBones() {
 	}
 	//ÇÖÊ´
 	{
-		ÇÖÊ´[0][0] = Bones::Í·;
+		ÇÖÊ´[0][0] = Bones::head;
 		ÇÖÊ´[0][1] = Bones::¾±;
 		ÇÖÊ´[0][2] = Bones::ÐØ;
 		ÇÖÊ´[0][3] = Bones::¸¹;
@@ -553,7 +582,7 @@ void initBones() {
 	}
 	//»ÃÏó
 	{
-		»ÃÏó[0][0] = Bones::Í·;
+		»ÃÏó[0][0] = Bones::head;
 		»ÃÏó[0][1] = Bones::¾±;
 		»ÃÏó[0][2] = Bones::ÐØ;
 		»ÃÏó[0][3] = Bones::¸¹;
@@ -587,7 +616,7 @@ void initBones() {
 	}
 	//»ªÉ­
 	{
-		»ªÉ­[0][0] = Bones::Í·;
+		»ªÉ­[0][0] = Bones::head;
 		»ªÉ­[0][1] = Bones::¾±;
 		»ªÉ­[0][2] = Bones::ÐØ;
 		»ªÉ­[0][3] = Bones::¸¹;
