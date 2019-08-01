@@ -186,12 +186,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 30) {
 			float js = distance * 0.01905f / 100;
-			if (js > 1) js = 1;
+			if (js > 1) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.78f);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.75f);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.55f);
-			aimLocal.z += 360 * bullet_gv * (flTime * flTime) * js;
-			aimLocal.z += 1.2f;
+			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.75f);
+			aimLocal.z += 360.f * bullet_gv * (flTime * flTime) * js;
+			aimLocal.z -= 1.5F;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -203,15 +203,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D angle = { tb, lf, 0.f };
 		Vec3D punch = {};
 		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
-		if (punch.x != 0 && punch.y != 0 && punch.z != 0)
-		{
-			angle.x -= punch.x;
-			angle.y -= punch.y;
-			angle.z -= punch.z;
-		}
+		angle.x -= punch.x;
+		angle.y -= punch.y;
+		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
-		Sleep(1);
-	}
+		//Sleep(1);
+	} 
 	return 0;
 }
 

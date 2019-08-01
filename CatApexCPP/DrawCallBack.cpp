@@ -125,7 +125,7 @@ void drawEntity() {
 		startFor:
 			for (ImVec2 local : itemLocals) {
 				if (local.x == BoxX && local.y == BoxY) {
-					BoxY -= 15;
+					BoxY -= 17;
 					goto startFor;
 				}
 			}
@@ -133,7 +133,8 @@ void drawEntity() {
 			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
 			needFrees.emplace_back(buff);
 		}
-		else if (entity.type == 1) {
+		else if (entity.type == 1)
+		{
 			float BoxX = gamePoint.x + CentWindow.x +(
 				worldArray[0][0] * entityLocal.x + 
 				worldArray[0][1] * entityLocal.y +
@@ -190,9 +191,16 @@ void drawEntity() {
 				}
 				drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
 					playerColor, buff);
-				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.1f,
+				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.f,
 					playerColor);
-				DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
+				ImVec2 tmpPiont;
+				tmpPiont.x = CentWindow.x - BoxX;
+				tmpPiont.y = CentWindow.y - BoxY;
+				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
+				if (entity.distance < 200)
+				{
+					DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
+				}
 				needFrees.emplace_back(buff);
 			}
 
@@ -203,7 +211,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 12) {
+				if (entity.distance < 45) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {
@@ -215,30 +223,75 @@ void drawEntity() {
 			}
 		}
 	}
-
-	readWorldArray(&worldArray);
 	float losInside = 0;
-
+	Vec3D myLocal = {};
+	readVec3D(MouseAddr - 28, &myLocal);
+	bool insideSubmit = false;
 	for (ApexEntity et1 : insidePlayer) {
 		Vec3D entityLocal = {};
 		readVec3D(et1.point + m_location, &entityLocal);
-
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +
 			worldArray[3][3];
 		if (ViewW < 0.01f) continue;
-		float distance = ViewW / 30;
-		if (losInside == 0 || distance < losInside) {
-			losInside = distance;
-			aimEntity = et1.point;
-			losDistance = 1;
+		ViewW = 1 / ViewW;
+		float BoxX = gamePoint.x + CentWindow.x + (
+			worldArray[0][0] * entityLocal.x +
+			worldArray[0][1] * entityLocal.y +
+			worldArray[0][2] * entityLocal.z +
+			worldArray[0][3]
+			) * ViewW * CentWindow.x;
+		float BoxY1 = gamePoint.y + CentWindow.y - (
+			worldArray[1][0] * entityLocal.x +
+			worldArray[1][1] * entityLocal.y +
+			worldArray[1][2] * (entityLocal.z + 70) +
+			worldArray[1][3]
+			) * ViewW * CentWindow.y;
+		float BoxY = gamePoint.y + CentWindow.y - (
+			worldArray[1][0] * entityLocal.x +
+			worldArray[1][1] * entityLocal.y +
+			worldArray[1][2] * (entityLocal.z - 10) +
+			worldArray[1][3]
+			) * ViewW * CentWindow.y;
+		ImVec4 pRect = { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY };
+		pRect.z += pRect.x;
+		pRect.w += pRect.y;
+		//大数在前 小数在后
+		if ( (pRect.x > CentWindow.x && pRect.z < CentWindow.x) && (pRect.y > CentWindow.y && pRect.w < CentWindow.y) )
+		{
+			float xx = entityLocal.x - myLocal.x;
+			float yy = entityLocal.y - myLocal.y;
+			float zz = entityLocal.z - myLocal.z;
+			float pDistance = sqrt(xx * xx + yy * yy + zz * zz);
+			if (pDistance < losInside || losInside == 0)
+			{
+				insideSubmit = true;
+				losInside = pDistance;
+				aimEntity = et1.point;
+			}
+		}
+	}
+	if (!insideSubmit && insidePlayer.size() > 0)
+	{
+		for (ApexEntity et1 : insidePlayer) {
+			Vec3D entityLocal = {};
+			readVec3D(et1.point + m_location, &entityLocal);
+			float xx = entityLocal.x - myLocal.x;
+			float yy = entityLocal.y - myLocal.y;
+			float zz = entityLocal.z - myLocal.z;
+			float pDistance = sqrt(xx * xx + yy * yy + zz * zz);
+			if (pDistance < losInside || losInside == 0)
+			{
+				insideSubmit = true;
+				losInside = pDistance;
+				aimEntity = et1.point;
+			}
 		}
 	}
 
-
 	lastPlayer = aimEntity;
 
-	if (losDistance == 0 && aimThreadStop) {
+	if (losDistance == 0 && losInside == 0 && aimThreadStop) {
 		aimEntity = 0;
 	}
 
