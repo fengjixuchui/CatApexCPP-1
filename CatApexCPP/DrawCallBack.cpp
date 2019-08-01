@@ -271,23 +271,6 @@ void drawEntity() {
 			}
 		}
 	}
-	if (!insideSubmit && insidePlayer.size() > 0)
-	{
-		for (ApexEntity et1 : insidePlayer) {
-			Vec3D entityLocal = {};
-			readVec3D(et1.point + m_location, &entityLocal);
-			float xx = entityLocal.x - myLocal.x;
-			float yy = entityLocal.y - myLocal.y;
-			float zz = entityLocal.z - myLocal.z;
-			float pDistance = sqrt(xx * xx + yy * yy + zz * zz);
-			if (pDistance < losInside || losInside == 0)
-			{
-				insideSubmit = true;
-				losInside = pDistance;
-				aimEntity = et1.point;
-			}
-		}
-	}
 
 	lastPlayer = aimEntity;
 
