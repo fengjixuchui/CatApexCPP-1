@@ -199,6 +199,19 @@ wchar_t* char2wchar_t(char* cstr) {
 	return wstr;
 }
 
+void usleep(unsigned int usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * (__int64)usec);
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
+
 void initEntityNames() {
 	entityNames[1] = { u8"AWM", colors.ShiShi };
 	entityNames[2] = { u8"¿ÕÍ¶Åç×Ó", colors.ShiShi };

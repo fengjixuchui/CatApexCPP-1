@@ -211,7 +211,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 45) {
+				if (entity.distance < 28) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {

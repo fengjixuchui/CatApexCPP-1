@@ -168,6 +168,7 @@ void initMenu();
 void startThreads();
 void initEntityNames();
 void initBones();
+void usleep(unsigned int usec);
 
 
 enum Bones : int {

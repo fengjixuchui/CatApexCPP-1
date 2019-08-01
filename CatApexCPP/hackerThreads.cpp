@@ -34,7 +34,6 @@ POINT CentWindow;
 int weaponEntityid = 0;
 __int64 weaponEntityPoint = 0;
 float bulletSpeed = 0;
-bool bulledSpeedGeted = false;
 float bullet_gv = 0;
 
 
@@ -151,26 +150,19 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	while (!a) {
 		if (!aim) {
 			aimThreadStop = true;
-			bulledSpeedGeted = false;
 			i = 0;
 			SuspendThread(hAimThread);
 		}
-
-		if (!bulledSpeedGeted)
-		{
-			readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
-			weaponEntityid &= 0xFFFF;
-			if (weaponEntityid > 0 && weaponEntityid < 65535) {
-				readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
-			}
-
-			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
-			if (bulletSpeed == 0) {
-				bulletSpeed = 15000;
-			}
-			readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
-			bulledSpeedGeted = true;
+		readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		weaponEntityid &= 0xFFFF;
+		if (weaponEntityid > 0 && weaponEntityid < 65535) {
+			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
+		readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
+		if (bulletSpeed == 0) {
+			bulletSpeed = 15000;
+		}
+		readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
 		Vec3D entityLocal = {};
 		readVec3D(aimEntity + m_location, &entityLocal);
 		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
@@ -185,13 +177,13 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 30) {
-			float js = distance * 0.01905f / 100;
+			float js = distance * 0.01905f / 108;
 			if (js > 1) js = 1.f;
-			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.78f);
-			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.75f);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.75f);
-			aimLocal.z += 360.f * bullet_gv * (flTime * flTime) * js;
-			aimLocal.z -= 1.5F;
+			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.90f);
+			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.90f);
+			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.70f;
+			aimLocal.z += 270.f * bullet_gv * (flTime * flTime);
+			aimLocal.z -= 1.8F;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
