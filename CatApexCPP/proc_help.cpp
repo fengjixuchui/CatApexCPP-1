@@ -244,30 +244,30 @@ void initEntityNames() {
 	entityNames[39] = { u8"重型弹药", colors.ZhongXing };
 
 	entityNames[41] = { u8"凤凰", colors.ShengQi };
-	entityNames[42] = { u8"大电脑", colors.ShengQi };
+	entityNames[42] = { u8"大电脑", colors.ShiShi };
 	entityNames[43] = { u8"注射器", colors.ShengQi };
-	entityNames[44] = { u8"大电池", colors.ShengQi };
+	entityNames[44] = { u8"大电池", colors.ShiShi };
 	entityNames[45] = { u8"小电池", colors.ShengQi };
 
-	entityNames[46] = { u8"一级头", colors.PuTong };
-	entityNames[47] = { u8"二级头", colors.GaoJi };
-	entityNames[48] = { u8"三级头", colors.ShengQi };
-	entityNames[49] = { u8"四级头", colors.ShiShi };
+	entityNames[46] = { u8"头 lv.1", colors.PuTong };
+	entityNames[47] = { u8"头 lv.2", colors.GaoJi };
+	entityNames[48] = { u8"头 lv.3", colors.ShiShi };
+	entityNames[49] = { u8"头 lv.4", colors.ShiShi };
 
-	entityNames[50] = { u8"一级甲", colors.PuTong };
-	entityNames[51] = { u8"二级甲", colors.GaoJi };
-	entityNames[52] = { u8"三级甲", colors.ShengQi };
-	entityNames[53] = { u8"四级甲", colors.ShiShi };
+	entityNames[50] = { u8"甲 lv.1", colors.PuTong };
+	entityNames[51] = { u8"甲 lv.2", colors.GaoJi };
+	entityNames[52] = { u8"甲 lv.3", colors.ShiShi };
+	entityNames[53] = { u8"甲 lv.4", colors.ShiShi };
 
-	entityNames[54] = { u8"一级盾", colors.PuTong };
-	entityNames[55] = { u8"二级盾", colors.GaoJi };
-	entityNames[56] = { u8"三级盾", colors.ShengQi };
-	entityNames[57] = { u8"四级盾", colors.ShiShi };
+	entityNames[54] = { u8"盾 lv.1", colors.PuTong };
+	entityNames[55] = { u8"盾 lv.2", colors.GaoJi };
+	entityNames[56] = { u8"盾 lv.3", colors.ShengQi };
+	entityNames[57] = { u8"盾 lv.4", colors.ShiShi };
 
-	entityNames[58] = { u8"一级包", colors.PuTong };
-	entityNames[59] = { u8"二级包", colors.GaoJi };
-	entityNames[60] = { u8"三级包", colors.ShengQi };
-	entityNames[61] = { u8"四级包", colors.ShiShi };
+	entityNames[58] = { u8"包 lv.1", colors.PuTong };
+	entityNames[59] = { u8"包 lv.2", colors.GaoJi };
+	entityNames[60] = { u8"包 lv.3", colors.ShiShi };
+	entityNames[61] = { u8"包 lv.4", colors.ShiShi };
 
 	entityNames[62] = { u8"铝热剂", colors.GaoJi };
 	entityNames[63] = { u8"雷", colors.GaoJi };
@@ -282,18 +282,18 @@ void initEntityNames() {
 	entityNames[71] = { u8"2-4x", colors.GaoJi };
 	entityNames[72] = { u8"6x", colors.ShengQi };
 	entityNames[73] = { u8"4-8x", colors.ShengQi };
-	entityNames[74] = { u8"4-10x", colors.ShiShi };
+	entityNames[74] = { u8"4-10x", colors.ShengQi };
 	entityNames[75] = { u8"枪管稳定", colors.GaoJi };
 	entityNames[76] = { u8"枪管稳定Lv.2", colors.GaoJi };
 	entityNames[77] = { u8"枪管稳定Lv.3", colors.ShengQi };
-	entityNames[78] = { u8"枪管稳定Lv.4", colors.ShiShi };
+	entityNames[78] = { u8"枪管稳定Lv.4", colors.ShengQi };
 	entityNames[79] = { u8"轻型扩容", colors.GaoJi };
 	entityNames[80] = { u8"轻型扩容Lv.2", colors.GaoJi };
-	entityNames[81] = { u8"轻型扩容Lv.3", colors.ShengQi };
+	entityNames[81] = { u8"轻型扩容Lv.3", colors.ShiShi };
 
 	entityNames[82] = { u8"重型扩容", colors.GaoJi };
 	entityNames[83] = { u8"重型扩容Lv.2", colors.GaoJi };
-	entityNames[84] = { u8"重型扩容Lv.3", colors.ShengQi };
+	entityNames[84] = { u8"重型扩容Lv.3", colors.ShiShi };
 
 	entityNames[85] = { u8"能量扩容", colors.GaoJi };
 	entityNames[86] = { u8"能量扩容Lv.2", colors.GaoJi };
@@ -315,8 +315,8 @@ void initEntityNames() {
 	entityNames[98] = { u8"射击模式选择器", colors.ShengQi };
 	entityNames[99] = { u8"精准收束器", colors.ShengQi };
 	entityNames[100] = { u8"爆头伤害配件", colors.ShengQi };
-	entityNames[101] = { u8"干扰者弹药", colors.ShiShi };
-	entityNames[102] = { u8"锤点弹药", colors.ShiShi };
+	entityNames[101] = { u8"干扰者弹药", colors.ShengQi };
+	entityNames[102] = { u8"锤点弹药", colors.ShengQi };
 
 }
 

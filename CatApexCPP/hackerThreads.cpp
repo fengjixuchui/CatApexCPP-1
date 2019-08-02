@@ -31,11 +31,6 @@ int windowW;
 int windowH;
 POINT CentWindow;
 
-int weaponEntityid = 0;
-__int64 weaponEntityPoint = 0;
-float bulletSpeed = 0;
-float bullet_gv = 0;
-
 
 DWORD WINAPI InfoThread(LPVOID lpParam) {
 	CoInitialize(0);
@@ -57,6 +52,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
+		printf("MyPoint: %lld\n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -105,7 +101,11 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					float zz = local.z - myLocal.z;
 					float distance = sqrt(xx * xx + yy * yy + zz * zz);
 					distance *= 0.01905f;
-					if (distance > appConfigs.WuPingFanWei) continue;
+					if (distance > appConfigs.WuPingFanWei && (item.color != colors.ShiShi || distance > 350 )) continue;
+					if (item.color == colors.ShiShi)
+					{
+						item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
+					}
 					ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
 
 					tempEntityList.emplace_back(entity);
@@ -148,6 +148,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	aimEntity = 0;
 	int i = 0;
 	while (!a) {
+		int weaponEntityid = 0;
+		__int64 weaponEntityPoint = 0;
+		float bulletSpeed = 0;
+		float bullet_gv = 0;
+
 		if (!aim) {
 			aimThreadStop = true;
 			i = 0;
@@ -183,7 +188,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.90f);
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.70f;
 			aimLocal.z += 270.f * bullet_gv * (flTime * flTime);
-			aimLocal.z -= 1.8F;
+			aimLocal.z -= 1.92F;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -200,12 +205,16 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
 		//Sleep(1);
-	} 
+	}
 	return 0;
 }
 
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	bool a = false;
+	while (true)
+	{
+		Sleep(1000);
+	}
 	return 0;
 }
 

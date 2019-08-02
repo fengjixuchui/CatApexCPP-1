@@ -8,11 +8,13 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 std::vector<void *> needFrees;
 
 void drawMenu();
 void drawEntity();
+bool GreaterSort(ApexEntity a, ApexEntity b) { return (a.distance > b.distance); }
 using namespace std;
 
 __int64 lastPlayer = 0;
@@ -29,7 +31,6 @@ void drawMenu() {
 	if (!appConfigs.MenuStatus) {
 		return;
 	}
-	drawStrockText(ImGui::GetOverlayDrawList(), font, myFontSize, { 1, 1 }, { 0, 255, 255 }, u8"CatApex-CPPVersion");
 	ImDrawList *drawList = ImGui::GetOverlayDrawList();
 	int menuTop = (gameRect.bottom - 100) / 2;
 	int menuIndex = 0;
@@ -87,12 +88,20 @@ void drawMenu() {
 }
 
 void drawEntity() {
+	__int64 tempAim = 0;
 	insidePlayer.clear();
 	itemLocals.clear();
 	readWorldArray(&worldArray);
 	ImDrawList *drawList = ImGui::GetOverlayDrawList();
 	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 0x00, 0xff, 0xff }),
 		50, 1.2f);
+	int aimEntityStatus = 0;
+	if (aimEntity > 0)
+	{
+		readMem((HANDLE)gamePid, aimEntityStatus + m_bleedoutState, 4, &aimEntityStatus);
+	}
+	sort(apexEntityList.begin(), apexEntityList.end(), GreaterSort);
+	//
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;
 		Vec3D entityLocal = {};
@@ -206,18 +215,18 @@ void drawEntity() {
 
 			if (status != 0) continue;
 
-			if (aimThreadStop && appConfigs.ZiDongMiaoZhun) {
+			if ((aimThreadStop || aimEntityStatus != 0) && appConfigs.ZiDongMiaoZhun) {
 				ImVec2 tmpPiont;
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 28) {
+				if (entity.distance < 20) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {
 					if (showDistance < losDistance || losDistance == 0) {
 						losDistance = showDistance;
-						aimEntity = entity.point;
+						tempAim = entity.point;
 					}
 				}
 			}
@@ -257,7 +266,8 @@ void drawEntity() {
 		pRect.z += pRect.x;
 		pRect.w += pRect.y;
 		//大数在前 小数在后
-		if ( (pRect.x > CentWindow.x && pRect.z < CentWindow.x) && (pRect.y > CentWindow.y && pRect.w < CentWindow.y) )
+		// && (pRect.y > CentWindow.y && pRect.w < CentWindow.y)
+		if ( (pRect.x > CentWindow.x && pRect.z < CentWindow.x) )
 		{
 			float xx = entityLocal.x - myLocal.x;
 			float yy = entityLocal.y - myLocal.y;
@@ -267,17 +277,35 @@ void drawEntity() {
 			{
 				insideSubmit = true;
 				losInside = pDistance;
-				aimEntity = et1.point;
+				tempAim = et1.point;
 			}
 		}
 	}
 
-	lastPlayer = aimEntity;
-
-	if (losDistance == 0 && losInside == 0 && aimThreadStop) {
-		aimEntity = 0;
+	if (!insideSubmit && insidePlayer.size() > 0)
+	{
+		for (ApexEntity et1 : insidePlayer) {
+			Vec3D entityLocal = {};
+			readVec3D(et1.point + m_location, &entityLocal);
+			float xx = entityLocal.x - myLocal.x;
+			float yy = entityLocal.y - myLocal.y;
+			float zz = entityLocal.z - myLocal.z;
+			float pDistance = sqrt(xx * xx + yy * yy + zz * zz);
+			if (pDistance < losInside || losInside == 0)
+			{
+				insideSubmit = true;
+				losInside = pDistance;
+				tempAim = et1.point;
+			}
+		}
 	}
 
+	lastPlayer = tempAim;
+
+	if (losDistance == 0 && losInside == 0 && aimThreadStop) {
+		tempAim = 0;
+	}
+	aimEntity = tempAim;
 	if (appConfigs.ZiDongMiaoZhun) {
 		if (GetAsyncKeyState(appConfigs.MiaoZhunReJian) != 0 || GetAsyncKeyState(VK_CONTROL)) {
 			if (aimEntity > 0) {
