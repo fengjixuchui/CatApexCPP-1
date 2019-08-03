@@ -8,13 +8,11 @@
 #include <sstream>
 #include <string>
 #include <iostream>
-#include <algorithm>
 
 std::vector<void *> needFrees;
 
 void drawMenu();
 void drawEntity();
-bool GreaterSort(ApexEntity a, ApexEntity b) { return (a.distance > b.distance); }
 using namespace std;
 
 __int64 lastPlayer = 0;
@@ -100,7 +98,6 @@ void drawEntity() {
 	{
 		readMem((HANDLE)gamePid, aimEntityStatus + m_bleedoutState, 4, &aimEntityStatus);
 	}
-	sort(apexEntityList.begin(), apexEntityList.end(), GreaterSort);
 	//
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;

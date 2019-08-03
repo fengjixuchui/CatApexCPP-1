@@ -20,7 +20,7 @@ bool connectDrv()
 	{
 		return false;
 	}
-	//protect();
+	protect();
 	return true;
 }
 

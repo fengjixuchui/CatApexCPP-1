@@ -70,7 +70,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	char * EntityListMem = (char *)malloc(len + 1);
 	char * EntityMemCached = (char *)malloc(0x4230);
 	while (!a) {
-		Sleep(200);
+		Sleep(350);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
@@ -87,52 +87,50 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 
 			if (apexNamePoint < 1000000) continue;
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
-			if (apexName[0] == 'p') {
-				if (!memcmp(apexName, "prop_survival", 13)) {
-					if (!appConfigs.WuPingTouShi) continue;
-					int flag = 0;
-					memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
-					ItemInfo item = entityNames[flag];
-					if (item.color == 0) continue;
-					Vec3D local = {};
-					memcpy(&local, &EntityMemCached[m_location], sizeof(local));
-					float xx = local.x - myLocal.x;
-					float yy = local.y - myLocal.y;
-					float zz = local.z - myLocal.z;
-					float distance = sqrt(xx * xx + yy * yy + zz * zz);
-					distance *= 0.01905f;
-					if (distance > appConfigs.WuPingFanWei && (item.color != colors.ShiShi || distance > 350 )) continue;
-					if (item.color == colors.ShiShi)
-					{
-						item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
-					}
-					ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
-
-					tempEntityList.emplace_back(entity);
-					continue;
-				}
-				else if (!memcmp(apexName, "player", 6))
+			if (!memcmp(apexName, "prop_survival", 13)) {
+				if (!appConfigs.WuPingTouShi) continue;
+				int flag = 0;
+				memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
+				ItemInfo item = entityNames[flag];
+				if (item.color == 0) continue;
+				Vec3D local = {};
+				memcpy(&local, &EntityMemCached[m_location], sizeof(local));
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				if (distance > appConfigs.WuPingFanWei && (item.color != colors.ShiShi || distance > 350)) continue;
+				if (item.color == colors.ShiShi)
 				{
-					Vec3D local = {};
-					memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
-					if (local.x == 0 || local.y == 0 || local.z == 0) continue;
-					int team = 0;
-					memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
-					if (team == MyTeam) continue;
-					if (cuPoint == MySelfPoint) continue;
-					int blood = 0;
-					memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
-					if (blood <= 0 || blood > 100) continue;
-					float xx = local.x - myLocal.x;
-					float yy = local.y - myLocal.y;
-					float zz = local.z - myLocal.z;
-					float distance = sqrt(xx * xx + yy * yy + zz * zz);
-					distance *= 0.01905f;
-					if (distance > appConfigs.TouShiFanWei) continue;
-					ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance };
-					tempEntityList.emplace_back(entity);
-					continue;
+					item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
 				}
+				ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
+
+				tempEntityList.emplace_back(entity);
+				continue;
+			}
+			else if (!memcmp(apexName, "player", 6))
+			{
+				Vec3D local = {};
+				memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
+				if (local.x == 0 || local.y == 0 || local.z == 0) continue;
+				int team = 0;
+				memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
+				if (team == MyTeam) continue;
+				if (cuPoint == MySelfPoint) continue;
+				int blood = 0;
+				memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
+				if (blood <= 0 || blood > 100) continue;
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				if (distance > appConfigs.TouShiFanWei) continue;
+				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance };
+				tempEntityList.emplace_back(entity);
+				continue;
 			}
 		}
 		apexEntityList.clear();
@@ -204,7 +202,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
-		//Sleep(1);
+		Sleep(2);
 	}
 	return 0;
 }

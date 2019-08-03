@@ -103,15 +103,15 @@ void DrawBone(ImDrawList * drawList, __int64 entity, Vec3D entityLocal, ImFont *
 	}
 	else if (entityType == 8)
 	{
-		for (size_t i = 0; i < 128; i++)
-		{
-			ImVec2 cuIndex = {};
-			Vec3DBoneToScreen(GetBonePos(entity, i, entityLocal), &cuIndex);
-			char buffer[20];
-			itoa(i, buffer, 10);
-			drawStrockText(drawList, font, 11, cuIndex, col, buffer);
-		}
-		//drawBones(drawList, entity, entityLocal, col, »ÃÏó);
+		//for (size_t i = 0; i < 128; i++)
+		//{
+		//	ImVec2 cuIndex = {};
+		//	Vec3DBoneToScreen(GetBonePos(entity, i, entityLocal), &cuIndex);
+		//	char buffer[20];
+		//	itoa(i, buffer, 10);
+		//	drawStrockText(drawList, font, 11, cuIndex, col, buffer);
+		//}
+		drawBones(drawList, entity, entityLocal, col, »ÃÏó);
 	}
 	else if (entityType == 9)
 	{
