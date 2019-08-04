@@ -18,17 +18,12 @@ ID3D11DeviceContext *g_pd3dDeviceContext = NULL;
 IDXGISwapChain *g_pSwapChain = NULL;
 ID3D11RenderTargetView *g_mainRenderTargetView = NULL;
 ImFont *font;
-
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 HWND myHWND;
 
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 bool CreateDeviceD3D(HWND hWnd);
-
 void CleanupDeviceD3D();
-
 void CreateRenderTarget();
-
 void CleanupRenderTarget();
 
 // Main code
