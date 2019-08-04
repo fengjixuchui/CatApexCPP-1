@@ -202,7 +202,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
-		Sleep(2);
+		usleep(50);
 	}
 	return 0;
 }
