@@ -183,7 +183,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
+		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
 
@@ -191,7 +191,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
+		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
 
@@ -199,7 +199,7 @@ void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, 
 	{
 		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][0], local), &lasteIndex);
 		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][i], local), &cuIndex);
-		drawList->AddLine(lasteIndex, cuIndex, col, 0.88f);
+		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
 }
