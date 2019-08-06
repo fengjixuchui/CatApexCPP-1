@@ -170,6 +170,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	int i = 0;
 	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
+	char * mySelfData = (char *)malloc(m_vecAimPunch + 160);
 	while (!a) {
 		int weaponEntityid = 0;
 		__int64 weaponEntityPoint = 0; 
@@ -181,7 +182,8 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			i = 0;
 			SuspendThread(hAimThread);
 		}
-		readMem((HANDLE)gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		readMem(gamePid, MySelfPoint, m_vecAimPunch + 160, mySelfData);
+		weaponEntityid = *(int *)&mySelfData[m_latestPrimaryWeapons];
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
 			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
@@ -221,8 +223,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
 		Vec3D angle = { tb, lf, 0.f };
-		Vec3D punch = {};
-		readVec3D(MySelfPoint + m_vecAimPunch, &punch);
+		Vec3D punch = *(Vec3D *) &mySelfData[m_vecAimPunch];
 		angle.x -= punch.x;
 		angle.y -= punch.y;
 		angle.z -= punch.z;
