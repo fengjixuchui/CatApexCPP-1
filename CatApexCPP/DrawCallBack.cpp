@@ -19,8 +19,15 @@ __int64 lastPlayer = 0;
 float losDistance = 0;
 std::vector<ApexEntity> insidePlayer;
 std::vector<ImVec2> itemLocals;
+char * playerData = 0;
+bool playerDataInit = false;
 
 void draw() {
+	if (!playerDataInit)
+	{
+		playerData = (char *) malloc(m_bleedoutState + 8);
+		playerDataInit = true;
+	}
 	drawMenu();
 	drawEntity();
 }
@@ -90,7 +97,7 @@ void drawEntity() {
 	insidePlayer.clear();
 	itemLocals.clear();
 	readWorldArray(&worldArray);
-	ImDrawList *drawList = ImGui::GetOverlayDrawList();
+	ImDrawList *drawList = ImGui::GetBackgroundDrawList();
 	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 0x00, 0xff, 0xff }),
 		50, 1.2f);
 	int aimEntityStatus = 0;
@@ -162,32 +169,26 @@ void drawEntity() {
 			if (BoxX - (BoxY1 - BoxY) / 4 > windowW || BoxX - (BoxY1 - BoxY) / 4 < -70 || BoxY1 > windowH || BoxY1 < 0) continue;
 		
 			ImColor playerColor;
-			if (lastPlayer == entity.point) {
+			if (aimEntity == entity.point) {
 				playerColor = ImColor({ 0xff, 0x50, 0x80 });
 			}
 			else {
 				playerColor = ImColor({ 0x00, 0xff, 0xff });
 			}
-			int blood = 0;
-			int armor = 0;
-			int status = 0;
-			readMem((HANDLE)gamePid, entity.point + m_iHealth, 4, &blood);
-			readMem((HANDLE)gamePid, entity.point + m_shieldHealth - 4, 4, &armor);
-			readMem((HANDLE)gamePid, entity.point + m_bleedoutState, 4, &status);
+			readMem((HANDLE)gamePid, entity.point, m_bleedoutState + 8, playerData);
+			int blood = *(int *) &playerData[m_iHealth];
+			int armor = *(int *) &playerData[m_shieldHealth - 4];
+			int status = *(int *) &playerData[m_bleedoutState];
+			if (blood <= 0 || blood > 100 || (blood == 50 && armor == 0)) continue;
 			if (status != 0) {
 				playerColor = ImColor({ 0x90, 0x00, 0x255 });
 			}
-			if (blood <= 0 || blood > 100) continue;
 			if (appConfigs.FangKuang) {
-
-
 				const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ";
 				const char *fName = u8"[%d] ¼×:%d Ñª:%d ¡¾%s¡¿";
-
-
 				char *buff = (char *)malloc(512);
 				memset(buff, 0, 512);
-				if (entity.point == lastPlayer) {
+				if (entity.point == aimEntity) {
 					char *pName = readPlayerName(entity.zc);
 					sprintf(buff, fName, entity.distance, armor, blood, pName);
 					free(pName);

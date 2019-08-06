@@ -54,7 +54,7 @@ void startDraw() {
 		NULL);
 	::ShowWindow(myHWND, 10);
 	::UpdateWindow(myHWND);
-	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
+	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
 	if (!CreateDeviceD3D(myHWND)) {

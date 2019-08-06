@@ -215,7 +215,7 @@ void usleep(unsigned int usec)
 void initEntityNames() {
 	entityNames[1] = { u8"AWM", colors.ShiShi };
 	entityNames[2] = { u8"空投喷子", colors.ShiShi };
-	entityNames[3] = { u8"空投狗杂", colors.ShiShi };
+	entityNames[3] = { u8"空投狗喷子", colors.ShiShi };
 	entityNames[4] = { u8"哈沃克", colors.NengLiang };
 	entityNames[5] = { u8"哈沃克[金]", colors.ShiShi };
 	entityNames[6] = { u8"轻机枪", colors.NengLiang };
@@ -244,10 +244,10 @@ void initEntityNames() {
 	entityNames[39] = { u8"重型弹药", colors.ZhongXing };
 
 	entityNames[41] = { u8"凤凰", colors.ShengQi };
-	entityNames[42] = { u8"大电脑", colors.ShiShi };
+	entityNames[42] = { u8"大急救箱", colors.ShengQi };
 	entityNames[43] = { u8"注射器", colors.ShengQi };
-	entityNames[44] = { u8"大电池", colors.ShiShi };
-	entityNames[45] = { u8"小电池", colors.ShengQi };
+	entityNames[44] = { u8"大护盾电池", colors.ShengQi };
+	entityNames[45] = { u8"小护盾电池", colors.ShengQi };
 
 	entityNames[46] = { u8"头 lv.1", colors.PuTong };
 	entityNames[47] = { u8"头 lv.2", colors.GaoJi };
@@ -283,31 +283,31 @@ void initEntityNames() {
 	entityNames[72] = { u8"6x", colors.ShengQi };
 	entityNames[73] = { u8"4-8x", colors.ShengQi };
 	entityNames[74] = { u8"4-10x", colors.ShengQi };
-	entityNames[75] = { u8"枪管稳定", colors.GaoJi };
+	entityNames[75] = { u8"枪管稳定", colors.PuTong };
 	entityNames[76] = { u8"枪管稳定Lv.2", colors.GaoJi };
 	entityNames[77] = { u8"枪管稳定Lv.3", colors.ShengQi };
 	entityNames[78] = { u8"枪管稳定Lv.4", colors.ShengQi };
-	entityNames[79] = { u8"轻型扩容", colors.GaoJi };
+	entityNames[79] = { u8"轻型扩容Lv.1", colors.PuTong };
 	entityNames[80] = { u8"轻型扩容Lv.2", colors.GaoJi };
 	entityNames[81] = { u8"轻型扩容Lv.3", colors.ShiShi };
 
-	entityNames[82] = { u8"重型扩容", colors.GaoJi };
+	entityNames[82] = { u8"重型扩容Lv.1", colors.PuTong };
 	entityNames[83] = { u8"重型扩容Lv.2", colors.GaoJi };
 	entityNames[84] = { u8"重型扩容Lv.3", colors.ShiShi };
 
-	entityNames[85] = { u8"能量扩容", colors.GaoJi };
+	entityNames[85] = { u8"能量扩容Lv.1", colors.PuTong };
 	entityNames[86] = { u8"能量扩容Lv.2", colors.GaoJi };
 	entityNames[87] = { u8"能量扩容Lv.3", colors.ShengQi };
 
-	entityNames[88] = { u8"霰弹枪头", colors.GaoJi };
+	entityNames[88] = { u8"霰弹枪头Lv.1", colors.PuTong };
 	entityNames[89] = { u8"霰弹枪头Lv.2", colors.GaoJi };
 	entityNames[90] = { u8"霰弹枪头Lv.3", colors.ShengQi };
 
-	entityNames[91] = { u8"枪屁股", colors.GaoJi };
+	entityNames[91] = { u8"枪屁股Lv.1", colors.PuTong };
 	entityNames[92] = { u8"枪屁股Lv.2", colors.GaoJi };
 	entityNames[93] = { u8"枪屁股Lv.3", colors.ShengQi };
 
-	entityNames[94] = { u8"狙屁股", colors.GaoJi };
+	entityNames[94] = { u8"狙屁股Lv.1", colors.PuTong };
 	entityNames[95] = { u8"狙屁股Lv.2", colors.GaoJi };
 	entityNames[96] = { u8"狙屁股Lv.3", colors.ShengQi };
 

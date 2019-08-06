@@ -76,24 +76,22 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 		Vec3D myLocal = {};
 		readVec3D(MouseAddr - 28, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
-			memcpy(&cuPoint, &EntityListMem[i << 5], sizeof(cuPoint));
+			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
 			memset(EntityMemCached, 0, 0x2048);
 
 			readMem((HANDLE)gamePid, cuPoint, 0x4230, EntityMemCached);
-			memcpy(&apexNamePoint, &EntityMemCached[m_iSignifierName], sizeof(apexNamePoint));
+			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
 
 			if (apexNamePoint < 1000000) continue;
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
 			if (!memcmp(apexName, "prop_survival", 13)) {
 				if (!appConfigs.WuPingTouShi) continue;
-				int flag = 0;
-				memcpy(&flag, &EntityMemCached[m_customScriptInt], sizeof(flag));
+				int flag = *(int *)&EntityMemCached[m_customScriptInt];
 				ItemInfo item = entityNames[flag];
 				if (item.color == 0) continue;
-				Vec3D local = {};
-				memcpy(&local, &EntityMemCached[m_location], sizeof(local));
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				float xx = local.x - myLocal.x;
 				float yy = local.y - myLocal.y;
 				float zz = local.z - myLocal.z;
@@ -111,16 +109,11 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			}
 			else if (!memcmp(apexName, "player", 6))
 			{
-				Vec3D local = {};
-				memcpy(&local, &EntityMemCached[m_EyePosition], sizeof(local));
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_EyePosition];
 				if (local.x == 0 || local.y == 0 || local.z == 0) continue;
-				int team = 0;
-				memcpy(&team, &EntityMemCached[m_iTeamNum], sizeof(team));
+				int team = *(int *)&EntityMemCached[m_iTeamNum];
 				if (team == MyTeam) continue;
 				if (cuPoint == MySelfPoint) continue;
-				int blood = 0;
-				memcpy(&blood, &EntityMemCached[m_iHealth], sizeof(blood));
-				if (blood <= 0 || blood > 100) continue;
 				float xx = local.x - myLocal.x;
 				float yy = local.y - myLocal.y;
 				float zz = local.z - myLocal.z;
@@ -131,6 +124,37 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
+			else if (!memcmp(apexName, "npc_frag_drone", 14))
+			{
+				int flag = *(int *)&EntityMemCached[m_customScriptInt];
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				char * name = (char *) "大 npc_frag_drone 怕你们看不见我取了个这么长的名字";
+				ApexEntity entity = { cuPoint, 0, flag, name, (char *)"", ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1), 0, distance, NULL };
+				tempEntityList.emplace_back(entity);
+				continue;
+			}
+			//else
+			//{
+			//	if (!appConfigs.WuPingTouShi) continue;
+			//	int flag = *(int *)&EntityMemCached[m_customScriptInt];
+			//	Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+			//	float xx = local.x - myLocal.x;
+			//	float yy = local.y - myLocal.y;
+			//	float zz = local.z - myLocal.z;
+			//	float distance = sqrt(xx * xx + yy * yy + zz * zz);
+			//	distance *= 0.01905f;
+			//	char * qwq = (char *)malloc(32);
+			//	memcpy(qwq, apexName, 32);
+			//	ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
+
+			//	tempEntityList.emplace_back(entity);
+			//	continue;
+			//}
 		}
 		apexEntityList.clear();
 		apexEntityList = tempEntityList;
@@ -144,9 +168,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
+	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
+	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	while (!a) {
 		int weaponEntityid = 0;
-		__int64 weaponEntityPoint = 0;
+		__int64 weaponEntityPoint = 0; 
 		float bulletSpeed = 0;
 		float bullet_gv = 0;
 
@@ -160,19 +186,19 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
 			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
-		readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed, 4, &bulletSpeed);
+		readMem(gamePid, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
+		bulletSpeed = *(float *)&weaponData[m_flBulletSpeed];
 		if (bulletSpeed == 0) {
 			bulletSpeed = 15000;
 		}
-		readMem((HANDLE)gamePid, weaponEntityPoint + m_flBulletSpeed + 8, 4, &bullet_gv);
-		Vec3D entityLocal = {};
-		readVec3D(aimEntity + m_location, &entityLocal);
+		bullet_gv = *(float *)&weaponData[m_flBulletSpeed + 8];
+		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
+		Vec3D entityLocal = *(Vec3D *) &aimPlayerData[m_location];
 		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
 		Vec3D myLocal = {};
-		Vec3D VectorVec3D = {};
+		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
 		readVec3D(MouseAddr - 28, &myLocal);
-		readVec3D(aimEntity + m_vecVelocity, &VectorVec3D);
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
@@ -181,11 +207,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
 			float js = distance * 0.01905f / 100;
 			if (js > 1.f) js = 1.f;
-			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.98f);
-			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.98f);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.88f;
+			aimLocal.x += ((VectorVec3D.x * flTime) * js);
+			aimLocal.y += ((VectorVec3D.y * flTime) * js);
+			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
-			aimLocal.z -= 1.30F;
+			aimLocal.z -= 1.90F;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -201,7 +227,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
-		usleep(10);
 	}
 	return 0;
 }
