@@ -52,7 +52,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		printf("MyPoint: %lld\n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -184,9 +183,9 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js * 0.98f);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js * 0.98f);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
+			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.88f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
-			aimLocal.z -= 2.F;
+			aimLocal.z -= 1.30F;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
@@ -202,7 +201,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
-		usleep(50);
+		usleep(10);
 	}
 	return 0;
 }

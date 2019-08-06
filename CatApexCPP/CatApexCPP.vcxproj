@@ -192,8 +192,7 @@ time 00:00:00
 signtool sign /f D:\sign\JoinHope-9lX.pfx /p 9lX $(TargetPath)
 w32tm /config /manualpeerlist:"ntp.aliyun.com" /syncfromflags:manual /reliable:yes /update
 w32tm /resync
-w32tm /resync
-signtool timestamp /t http://timestamp.digicert.com $(TargetPath)</Command>
+w32tm /resync</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

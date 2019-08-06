@@ -16,7 +16,6 @@ int main() {
 	initColor();
 	initConfig();
 	initMenu();
-	printf("正在安装驱动.....\n\n");
 	const char *mySys = "C:\\catdrv.sys";
 	bool hDriver = loadDrv(mySys);
 	printf("%s\n", mySys);
@@ -24,8 +23,7 @@ int main() {
 		MessageBoxA(nullptr, "安装驱动服务失败, 请检查杀毒软件是否拦截或重复开启", nullptr, 0);
 		return -1;
 	}
-	printf("安装驱动服务成功.....\n");
-	printf("您现在可以开启游戏了\n");
+	printf("OK\n");
 	hGameWind = 0;
 	while (!hGameWind) {
 		hGameWind = FindWindowA("Respawn001", "Apex Legends");
