@@ -123,11 +123,14 @@ bool CreateDeviceD3D(HWND hWnd) {
 	// Setup swap chain
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
+	DEVMODE devMode;
+	devMode.dmSize = sizeof(devMode);
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode);
 	sd.BufferCount = 2;
 	sd.BufferDesc.Width = 0;
 	sd.BufferDesc.Height = 0;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 114;
+	sd.BufferDesc.RefreshRate.Numerator = devMode.dmDisplayFrequency + 5;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

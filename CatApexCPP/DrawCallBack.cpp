@@ -36,7 +36,13 @@ void drawMenu() {
 	if (!appConfigs.MenuStatus) {
 		return;
 	}
-	ImDrawList *drawList = ImGui::GetOverlayDrawList();
+	ImDrawList *drawList = ImGui::GetBackgroundDrawList();
+	const char * fps =  u8"Ã¿Ö¡ºÄÊ±: %.3f ms / Ö¡ÂÊ: %.2f";
+	char * drawStr = (char *) malloc(500);
+	memset(drawStr, 0, 500);
+	sprintf(drawStr, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), drawStr);
+	needFrees.emplace_back(drawStr);
 	int menuTop = (gameRect.bottom - 100) / 2;
 	int menuIndex = 0;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },

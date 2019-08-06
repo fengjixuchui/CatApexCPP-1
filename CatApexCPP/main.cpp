@@ -23,7 +23,10 @@ int main() {
 		MessageBoxA(nullptr, "安装驱动服务失败, 请检查杀毒软件是否拦截或重复开启", nullptr, 0);
 		return -1;
 	}
-	printf("OK\n");
+	DEVMODE devMode;
+	devMode.dmSize = sizeof(devMode);
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode);
+	printf("OK Your display frequency is %d\n", devMode.dmDisplayFrequency);
 	hGameWind = 0;
 	while (!hGameWind) {
 		hGameWind = FindWindowA("Respawn001", "Apex Legends");
