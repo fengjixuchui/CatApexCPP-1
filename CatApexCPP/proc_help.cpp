@@ -132,7 +132,7 @@ LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lP
 			appConfigs.ZiDongMiaoZhun = !appConfigs.ZiDongMiaoZhun;
 			break;
 		case VK_F7:
-			appConfigs.DanwuSanShe = !appConfigs.DanwuSanShe;
+			appConfigs.XianShiZhaZhu = !appConfigs.XianShiZhaZhu;
 			break;
 		case VK_HOME:
 			appConfigs.MenuStatus = !appConfigs.MenuStatus;
@@ -210,6 +210,10 @@ void usleep(unsigned int usec)
 	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
 	WaitForSingleObject(timer, INFINITE);
 	CloseHandle(timer);
+}
+
+int getRandomInt(int min, int max) {
+	return rand() % (max - min + 1) + min;
 }
 
 void initEntityNames() {

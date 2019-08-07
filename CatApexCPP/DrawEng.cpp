@@ -28,8 +28,8 @@ void CleanupRenderTarget();
 
 // Main code
 void startDraw() {
-	int clsLen = rand() % (25 - 12 + 1) + 12;
-	int wndLen = rand() % (20 - 15 + 1) + 15;
+	int clsLen = getRandomInt(30, 50);
+	int wndLen = getRandomInt(40, 60);
 	char * clsName = (char *) malloc(clsLen);
 	char * wndName = (char *)malloc(wndLen);
 	memset(clsName, 0, clsLen);
@@ -54,7 +54,7 @@ void startDraw() {
 		NULL);
 	::ShowWindow(myHWND, 10);
 	::UpdateWindow(myHWND);
-	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW);
+	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
 	if (!CreateDeviceD3D(myHWND)) {

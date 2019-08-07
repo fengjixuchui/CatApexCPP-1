@@ -71,7 +71,7 @@ typedef struct __AppConfigs {
 	bool ZiDongMiaoZhun;
 	float ZiMiaoFanWei;
 	int MiaoZhunReJian;
-	bool DanwuSanShe;
+	bool XianShiZhaZhu;
 } AppConfigs;
 
 typedef struct ItemInfo {
@@ -169,6 +169,7 @@ void startThreads();
 void initEntityNames();
 void initBones();
 void usleep(unsigned int usec);
+int getRandomInt(int min, int max);
 
 
 enum Bones : int {

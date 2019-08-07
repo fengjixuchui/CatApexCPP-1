@@ -91,10 +91,10 @@ void drawMenu() {
 
 	++menuIndex;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
-		appConfigs.DanwuSanShe ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"弹无散射[F7]");
+		appConfigs.XianShiZhaZhu ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"显示炸珠[F7]");
 	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
-		appConfigs.DanwuSanShe ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
-		appConfigs.DanwuSanShe ? u8"开" : u8"关");
+		appConfigs.XianShiZhaZhu ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
+		appConfigs.XianShiZhaZhu ? u8"开" : u8"关");
 
 }
 
@@ -122,6 +122,7 @@ void drawEntity() {
 		if (ViewW < 0.01) continue;
 		ViewW = 1 / ViewW;
 		if (entity.type == 0) {
+			//
 			float BoxX = gamePoint.x + CentWindow.x +(
 				worldArray[0][0] * entityLocal.x + 
 				worldArray[0][1] * entityLocal.y +
@@ -154,6 +155,7 @@ void drawEntity() {
 		}
 		else if (entity.type == 1)
 		{
+			//
 			float BoxX = gamePoint.x + CentWindow.x +(
 				worldArray[0][0] * entityLocal.x + 
 				worldArray[0][1] * entityLocal.y +
@@ -234,6 +236,33 @@ void drawEntity() {
 					}
 				}
 			}
+		}
+		else if (entity.type == 2)
+		{
+			//
+			char * name = (char *)u8"npc";
+			float BoxX = gamePoint.x + CentWindow.x + (
+				worldArray[0][0] * entityLocal.x +
+				worldArray[0][1] * entityLocal.y +
+				worldArray[0][2] * entityLocal.z +
+				worldArray[0][3]
+				) * ViewW * CentWindow.x;
+			float BoxY = gamePoint.y + CentWindow.y - (
+				worldArray[1][0] * entityLocal.x +
+				worldArray[1][1] * entityLocal.y +
+				worldArray[1][2] * entityLocal.z +
+				worldArray[1][3]
+				) * ViewW * CentWindow.y;
+			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
+				continue;
+			}
+			const char *fNormal = "%s| %d";
+			char *buff = (char *)malloc(128);
+			memset(buff, 0, 128);
+			sprintf(buff, fNormal, name, entity.distance);
+			itemLocals.emplace_back(BoxX, BoxY);
+			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
+			needFrees.emplace_back(buff);
 		}
 	}
 	float losInside = 0;

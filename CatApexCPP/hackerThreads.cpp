@@ -74,7 +74,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 		vector<ApexEntity> tempEntityList;
 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
 		Vec3D myLocal = {};
-		readVec3D(MouseAddr - 28, &myLocal);
+		readVec3D(MySelfPoint + m_location, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
 			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
@@ -124,8 +124,12 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
-			else if (!memcmp(apexName, "npc_frag_drone", 14))
+			else if (!memcmp(apexName, "npc", 3))
 			{
+				if (! appConfigs.XianShiZhaZhu)
+				{
+					continue;
+				}
 				int flag = *(int *)&EntityMemCached[m_customScriptInt];
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				float xx = local.x - myLocal.x;
@@ -133,14 +137,16 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float zz = local.z - myLocal.z;
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
-				char * name = (char *) "大 npc_frag_drone 怕你们看不见我取了个这么长的名字";
-				ApexEntity entity = { cuPoint, 0, flag, name, (char *)"", ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1), 0, distance, NULL };
+				if (distance > 500)
+				{
+					continue;
+				}
+				ApexEntity entity = { cuPoint, 2, flag, NULL, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
 			//else
 			//{
-			//	if (!appConfigs.WuPingTouShi) continue;
 			//	int flag = *(int *)&EntityMemCached[m_customScriptInt];
 			//	Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 			//	float xx = local.x - myLocal.x;
@@ -178,6 +184,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float bullet_gv = 0;
 
 		if (!aim) {
+			aimEntity = 0;
 			aimThreadStop = true;
 			i = 0;
 			SuspendThread(hAimThread);
@@ -213,8 +220,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
-			aimLocal.z -= 1.90F;
 		}
+		int random = getRandomInt(-150, 270);
+		aimLocal.z -= (float)(random / 100);
+		aimLocal.x -= (float)(random / 150);
+		aimLocal.y -= (float)(random / 150);
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -236,7 +246,7 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	bool a = false;
 	while (true)
 	{
-		Sleep(1000);
+		Sleep(10);
 	}
 	return 0;
 }
