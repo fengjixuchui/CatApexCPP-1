@@ -14,13 +14,12 @@ std::vector<void *> needFrees;
 void drawMenu();
 void drawEntity();
 using namespace std;
-
-__int64 lastPlayer = 0;
 float losDistance = 0;
 std::vector<ApexEntity> insidePlayer;
 std::vector<ImVec2> itemLocals;
 char * playerData = 0;
 bool playerDataInit = false;
+__int64 tempAim = 0;
 
 void draw() {
 	if (!playerDataInit)
@@ -96,10 +95,16 @@ void drawMenu() {
 		appConfigs.XianShiZhaZhu ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
 		appConfigs.XianShiZhaZhu ? u8"开" : u8"关");
 
+	++menuIndex;
+	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+		appConfigs.KaiFaZheXuanXiang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 }, u8"开发者选项[F12]");
+	drawStrockText(drawList, font, myFontSize, { 123, (float)menuTop + (menuIndex + 1) * 20 - 2 },
+		appConfigs.KaiFaZheXuanXiang ? ImColor{ 0, 255, 255 } : ImColor{ 255, 255, 255 },
+		appConfigs.KaiFaZheXuanXiang ? u8"开" : u8"关");
+
 }
 
 void drawEntity() {
-	__int64 tempAim = 0;
 	insidePlayer.clear();
 	itemLocals.clear();
 	readWorldArray(&worldArray);
@@ -109,7 +114,7 @@ void drawEntity() {
 	int aimEntityStatus = 0;
 	if (aimEntity > 0)
 	{
-		readMem((HANDLE)gamePid, aimEntityStatus + m_bleedoutState, 4, &aimEntityStatus);
+		readMem((HANDLE)gamePid, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
 	}
 	//
 	for (ApexEntity entity : apexEntityList) {
@@ -332,8 +337,6 @@ void drawEntity() {
 			}
 		}
 	}
-
-	lastPlayer = tempAim;
 
 	if (losDistance == 0 && losInside == 0 && aimThreadStop) {
 		tempAim = 0;

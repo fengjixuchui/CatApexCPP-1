@@ -72,6 +72,7 @@ typedef struct __AppConfigs {
 	float ZiMiaoFanWei;
 	int MiaoZhunReJian;
 	bool XianShiZhaZhu;
+	bool KaiFaZheXuanXiang;
 } AppConfigs;
 
 typedef struct ItemInfo {

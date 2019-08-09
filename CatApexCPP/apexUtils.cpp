@@ -171,7 +171,10 @@ int GetEntityType(__int64 entityPoint) {
 	}
 	else 
 	{
-		printf("%s\n", entityInfoName);
+		if (!infoName.empty() && entityInfoName[0] != 0)
+		{
+			printf("%s\n", entityInfoName);
+		}
 		return -1;
 	}
 }

@@ -39,9 +39,17 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 	while (!a) {
 		DWORD gameID = GetProcessIDByName("r5apex.exe");
 		if (gameID == 0) exit(0);
-		ClientToScreen(hGameWind, &gamePoint);
-		GetClientRect(hGameWind, &gameRect);
-		MoveWindow(myHWND, gamePoint.x, gamePoint.y, gameRect.right, gameRect.bottom, true);
+		POINT tempGamePoint = {};
+		RECT tempGameRect = {};
+		ClientToScreen(hGameWind, &tempGamePoint);
+		GetClientRect(hGameWind, &tempGameRect);
+		if (tempGamePoint.x != gamePoint.x || tempGamePoint.y != gamePoint.y || tempGameRect.right != gameRect.right || tempGameRect.bottom != gameRect.bottom)
+		{
+			MoveWindow(myHWND, tempGamePoint.x, tempGamePoint.y, tempGameRect.right, tempGameRect.bottom, true);
+			printf("Checked the game window moved. ReDraw\n");
+		}
+		gamePoint = tempGamePoint;
+		gameRect = tempGameRect;
 		windowW = gameRect.right;
 		windowH = gameRect.bottom;
 		CentWindow.x = windowW / 2;
@@ -52,6 +60,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
+		//printf("My: %lld \n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -69,7 +78,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	char * EntityListMem = (char *)malloc(len + 1);
 	char * EntityMemCached = (char *)malloc(0x4230);
 	while (!a) {
-		Sleep(350);
+		Sleep(200);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
@@ -124,7 +133,23 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
-			else if (!memcmp(apexName, "npc", 3))
+			else if (appConfigs.KaiFaZheXuanXiang)
+			{
+				int flag = *(int *)&EntityMemCached[m_customScriptInt];
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				char * qwq = (char *)malloc(32);
+				memcpy(qwq, apexName, 32);
+				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
+				GetEntityType(cuPoint);
+				tempEntityList.emplace_back(entity);
+				continue;
+			}
+			else if (!memcmp(apexName, "npc_frag", 8))
 			{
 				if (! appConfigs.XianShiZhaZhu)
 				{
@@ -137,30 +162,12 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float zz = local.z - myLocal.z;
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
-				if (distance > 500)
-				{
-					continue;
-				}
 				ApexEntity entity = { cuPoint, 2, flag, NULL, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
 				tempEntityList.emplace_back(entity);
+				//GetEntityType(cuPoint);
 				continue;
 			}
-			//else
-			//{
-			//	int flag = *(int *)&EntityMemCached[m_customScriptInt];
-			//	Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
-			//	float xx = local.x - myLocal.x;
-			//	float yy = local.y - myLocal.y;
-			//	float zz = local.z - myLocal.z;
-			//	float distance = sqrt(xx * xx + yy * yy + zz * zz);
-			//	distance *= 0.01905f;
-			//	char * qwq = (char *)malloc(32);
-			//	memcpy(qwq, apexName, 32);
-			//	ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
-
-			//	tempEntityList.emplace_back(entity);
-			//	continue;
-			//}
+			
 		}
 		apexEntityList.clear();
 		apexEntityList = tempEntityList;
@@ -221,10 +228,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		int random = getRandomInt(-150, 270);
+		int random = getRandomInt(-350, 500);
 		aimLocal.z -= (float)(random / 100);
-		aimLocal.x -= (float)(random / 150);
-		aimLocal.y -= (float)(random / 150);
+		aimLocal.x -= (float)(random / 320);
+		aimLocal.y -= (float)(random / 320);
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -238,6 +245,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
+		usleep(100);
 	}
 	return 0;
 }
@@ -246,7 +254,7 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	bool a = false;
 	while (true)
 	{
-		Sleep(10);
+		Sleep(1);
 	}
 	return 0;
 }

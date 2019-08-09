@@ -99,7 +99,7 @@ DWORD WINAPI KeyBoardHookThread(LPVOID lpParam) {
 	}
 	return 0;
 
-}
+} 
 
 LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam) {
 	if (nCode == 0 && wParam == 256) {
@@ -133,6 +133,9 @@ LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lP
 			break;
 		case VK_F7:
 			appConfigs.XianShiZhaZhu = !appConfigs.XianShiZhaZhu;
+			break;
+		case VK_F12:
+			appConfigs.KaiFaZheXuanXiang = !appConfigs.KaiFaZheXuanXiang;
 			break;
 		case VK_HOME:
 			appConfigs.MenuStatus = !appConfigs.MenuStatus;
