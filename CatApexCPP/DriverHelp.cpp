@@ -1,6 +1,6 @@
 #include "DriverHelp.h"
 
-#define Service_NAME		"CatDriver96"
+
 #define DEVICE_NAME			"\\\\?\\CatDriver64"
 
 typedef struct rwStruct

@@ -107,17 +107,22 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
 				if (distance > appConfigs.WuPingFanWei && (item.color != colors.ShiShi || distance > 350)) continue;
+				;
 				if (item.color == colors.ShiShi)
 				{
 					item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
 				}
 				ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
-
+			
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
 			else if (!memcmp(apexName, "player", 6))
 			{
+				if ((int)myLocal.z == 23440 || (int)myLocal.z == 4656)
+				{
+					continue;
+				}
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_EyePosition];
 				if (local.x == 0 || local.y == 0 || local.z == 0) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
@@ -142,10 +147,10 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float zz = local.z - myLocal.z;
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
-				char * qwq = (char *)malloc(32);
-				memcpy(qwq, apexName, 32);
+				char * qwq = (char *) malloc(80);
+				GetEntityTypeStr(cuPoint, qwq);
 				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
-				GetEntityType(cuPoint);
+				//GetEntityType(cuPoint);
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -167,6 +172,24 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				//GetEntityType(cuPoint);
 				continue;
 			}
+			//else if (!memcmp(apexName, "prop_script", 12))
+			//{
+			//	int flag = *(int *)&EntityMemCached[m_customScriptInt];
+			//	Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+			//	float xx = local.x - myLocal.x;
+			//	float yy = local.y - myLocal.y;
+			//	float zz = local.z - myLocal.z;
+			//	float distance = sqrt(xx * xx + yy * yy + zz * zz);
+			//	distance *= 0.01905f;
+			//	if (distance > 100)
+			//	{
+			//		continue;
+			//	}
+			//	ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, NULL };
+			//	tempEntityList.emplace_back(entity);
+			//	GetEntityType(cuPoint);
+			//	continue;
+			//}
 			
 		}
 		apexEntityList.clear();
@@ -177,14 +200,13 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 
 DWORD WINAPI SuperAim(LPVOID lpParam) {
 	CoInitialize(0);
-	bool a = false;
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
 	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	char * mySelfData = (char *)malloc(m_vecAimPunch + 160);
-	while (!a) {
+	while (true) {
 		int weaponEntityid = 0;
 		__int64 weaponEntityPoint = 0; 
 		float bulletSpeed = 0;
@@ -228,10 +250,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		int random = getRandomInt(-350, 500);
+		int random = getRandomInt(-380, 400);
 		aimLocal.z -= (float)(random / 100);
-		aimLocal.x -= (float)(random / 320);
-		aimLocal.y -= (float)(random / 320);
+		aimLocal.x -= (float)(random / 150);
+		aimLocal.y -= (float)(random / 150);
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -244,17 +266,25 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.x -= punch.x;
 		angle.y -= punch.y;
 		angle.z -= punch.z;
+		Vec3D buffAngle = angle;
+		buffAngle.x *= 0.3;
+		buffAngle.y *= 0.3;
+		buffAngle.z *= 0.3;
+		writeVec3D(MouseAddr, &buffAngle);
+		usleep(120);
+		writeVec3D(MouseAddr, &buffAngle);
+		usleep(120);
+		writeVec3D(MouseAddr, &buffAngle);
+		usleep(120);
 		writeVec3D(MouseAddr, &angle);
-		usleep(100);
 	}
 	return 0;
 }
 
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
-	bool a = false;
 	while (true)
 	{
-		Sleep(1);
+		Sleep(1000);
 	}
 	return 0;
 }

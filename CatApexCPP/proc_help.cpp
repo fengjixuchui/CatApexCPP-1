@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <windows.h>
+#include <random>
 #include "imgui/imgui.h"
 #include "hackerThreads.h"
 
@@ -216,7 +218,9 @@ void usleep(unsigned int usec)
 }
 
 int getRandomInt(int min, int max) {
-	return rand() % (max - min + 1) + min;
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	return mt() % (max - min + 1) + min;
 }
 
 void initEntityNames() {

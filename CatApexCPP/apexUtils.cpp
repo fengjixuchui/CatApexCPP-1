@@ -179,6 +179,107 @@ int GetEntityType(__int64 entityPoint) {
 	}
 }
 
+void GetEntityTypeStr(__int64 entityPoint, char * entityInfoNameStr) {
+	__int64 entityInfos = 0;
+	readMem(gamePid, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
+	readMem(gamePid, entityInfos + 4, 80, entityInfoNameStr);
+}
+
+const char * GetWeaponName(char * mName) {
+	if (!strcmp("empty_handed", mName))
+	{
+		return u8"手无寸铁";
+	}
+	else if (! strcmp("lstar", mName))
+	{
+		return "LSTAR";
+	}
+	else if (!strcmp("mastiff_stgn", mName))
+	{
+		return u8"空投喷子";
+	}
+	else if (!strcmp("at_rifle", mName))
+	{
+		return "AWM";
+	}
+	else if (!strcmp("pstl_sa3", mName))
+	{
+		return u8"莫桑比克";
+	}
+	else if (!strcmp("peacekeeper", mName))
+	{
+		return u8"和平捍卫者";
+	}
+	else if (!strcmp("w1128", mName))
+	{
+		return "EVA-8";
+	}
+	else if (!strcmp("p2011_auto", mName))
+	{
+		return u8"RE-45全自动";
+	}
+	else if (!strcmp("p2011", mName))
+	{
+		return "P2020";
+	}
+	else if (!strcmp("rspn101", mName))
+	{
+		return "R301";
+	}
+	else if (!strcmp("r97", mName))
+	{
+		return "R99";
+	}
+	else if (!strcmp("alternator_smg", mName))
+	{
+		return u8"转换者";
+	}
+	else if (!strcmp("g2", mName))
+	{
+		return "G7";
+	}
+	else if (!strcmp("b3wing", mName))
+	{
+		return u8"无敌手枪";
+	}
+	else if (!strcmp("lmg_hemlok", mName))
+	{
+		return "M600";
+	}
+	else if (!strcmp("rspn101_dmr", mName))
+	{
+		return u8"长弓";
+	}
+	else if (!strcmp("prowler_smg", mName))
+	{
+		return u8"猎兽冲锋枪";
+	}
+	else if (!strcmp("m1a1_hemlok", mName))
+	{
+		return u8"SL三连发";
+	}
+	else if (!strcmp("vinson", mName))
+	{
+		return "VK47";
+	}
+	else if (!strcmp("doubletake", mName))
+	{
+		return u8"三重狙";
+	}
+	else if (!strcmp("hemlock_br", mName))
+	{
+		return u8"专注机枪";
+	}
+	else if (!strcmp("beam_ar", mName))
+	{
+		return u8"哈沃克";
+	}
+	else
+	{
+		return mName;
+	}
+}
+
 void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, int boneIndex[3][16]) {
 	ImVec2 lasteIndex = {};
 	ImVec2 cuIndex = {};
