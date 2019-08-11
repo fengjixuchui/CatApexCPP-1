@@ -296,18 +296,18 @@ void drawEntity() {
 				WeaponName = (char *) GetWeaponName(weaponModelStr);
 			}
 			
-			const char *fNormal = u8"[%d] ¼×:%d Ñª:%d %s";
-			const char *fName = u8"[%d] ¼×:%d Ñª:%d ¡¾%s¡¿%s";
+			const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ¶ÓÎé:%d %s";
+			const char *fName = u8"[%d] ¼×:%d Ñª:%d ¶ÓÎé:%d ¡¾%s¡¿%s";
 			char *buff = (char *)malloc(512);
 			memset(buff, 0, 512);
 			if (entity.point == aimEntity) {
 				char * pName = readPlayerName(entity.zc);
-				sprintf(buff, fName, entity.distance, armor, blood, pName, WeaponName);
+				sprintf(buff, fName, entity.distance, armor, blood, *(int *)&playerData[m_iTeamNum], pName, WeaponName);
 				free(pName);
 			}
 			else
 			{
-				sprintf(buff, fNormal, entity.distance, armor, blood, WeaponName);
+				sprintf(buff, fNormal, entity.distance, armor, blood, *(int *)&playerData[m_iTeamNum], WeaponName);
 			}
 			
 			drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },

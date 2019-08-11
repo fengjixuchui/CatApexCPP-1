@@ -123,7 +123,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				{
 					continue;
 				}
-				Vec3D local = *(Vec3D *)&EntityMemCached[m_EyePosition];
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				if (local.x == 0 || local.y == 0 || local.z == 0) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
 				if (team == MyTeam) continue;
@@ -232,7 +232,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		bullet_gv = *(float *)&weaponData[m_flBulletSpeed + 8];
 		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		Vec3D entityLocal = *(Vec3D *) &aimPlayerData[m_location];
-		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
+		Vec3D aimLocal = GetBonePos(aimEntity, Bones::¾±, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
@@ -243,14 +243,14 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 100;
+			float js = distance * 0.01905f / 115;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.90f;
+			aimLocal.z += ((VectorVec3D.z * flTime) * js);
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		int random = getRandomInt(-380, 400);
+		int random = getRandomInt(-150, 400);
 		aimLocal.z -= (float)(random / 100);
 		aimLocal.x -= (float)(random / 150);
 		aimLocal.y -= (float)(random / 150);
@@ -266,16 +266,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.x -= punch.x;
 		angle.y -= punch.y;
 		angle.z -= punch.z;
-		Vec3D buffAngle = angle;
-		buffAngle.x *= 0.3;
-		buffAngle.y *= 0.3;
-		buffAngle.z *= 0.3;
-		writeVec3D(MouseAddr, &buffAngle);
-		usleep(120);
-		writeVec3D(MouseAddr, &buffAngle);
-		usleep(120);
-		writeVec3D(MouseAddr, &buffAngle);
-		usleep(120);
 		writeVec3D(MouseAddr, &angle);
 	}
 	return 0;
