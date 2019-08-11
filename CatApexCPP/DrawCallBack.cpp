@@ -118,6 +118,7 @@ void drawEntity() {
 	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 0x00, 0xff, 0xff }),
 		50, 1.2f);
 	int aimEntityStatus = 0;
+	int _50Players = 0;
 	if (aimEntity > 0)
 	{
 		readMem((HANDLE)gamePid, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
@@ -269,6 +270,10 @@ void drawEntity() {
 		if (status != 0) {
 			playerColor = ImColor({ 0x90, 0x00, 0x255 });
 		}
+		if (status == 0 && (int)entity.distance <= 50)
+		{
+			_50Players++;
+		}
 		if (appConfigs.FangKuang) {
 			int weaponEntityid = 0;
 			__int64 weaponEntityPoint = 0;
@@ -296,18 +301,18 @@ void drawEntity() {
 				WeaponName = (char *) GetWeaponName(weaponModelStr);
 			}
 			
-			const char *fNormal = u8"[%d] ¼×:%d Ñª:%d ¶ÓÎé:%d %s";
-			const char *fName = u8"[%d] ¼×:%d Ñª:%d ¶ÓÎé:%d ¡¾%s¡¿%s";
+			const char *fNormal = u8"[%d] ¼×:%d Ñª:%d - %s";
+			const char *fName = u8"[%d] ¼×:%d Ñª:%d¡¾%s¡¿- %s";
 			char *buff = (char *)malloc(512);
 			memset(buff, 0, 512);
 			if (entity.point == aimEntity) {
 				char * pName = readPlayerName(entity.zc);
-				sprintf(buff, fName, entity.distance, armor, blood, *(int *)&playerData[m_iTeamNum], pName, WeaponName);
+				sprintf(buff, fName, entity.distance, armor, blood,  pName, WeaponName);
 				free(pName);
 			}
 			else
 			{
-				sprintf(buff, fNormal, entity.distance, armor, blood, *(int *)&playerData[m_iTeamNum], WeaponName);
+				sprintf(buff, fNormal, entity.distance, armor, blood,  WeaponName);
 			}
 			
 			drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
@@ -344,6 +349,12 @@ void drawEntity() {
 		}
 		}
 	}
+
+	char* _50text = (char*) malloc(50);
+	memset(_50text, 0, 50);
+	sprintf(_50text, u8"50Ã×ÄÚÎ´µ¹µØµÐÈË: %d", _50Players);
+	drawStrockText(drawList, font, myFontSize, { (float)CentWindow.x - 100, 100.f }, _50Players == 0 ? ImColor{ 0, 255, 0 } : ImColor{ 255, 0, 0 }, _50text);
+	needFrees.emplace_back(_50text);
 
 	float losInside = 0;
 	Vec3D myLocal = {};

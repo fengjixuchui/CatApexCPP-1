@@ -119,12 +119,8 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			}
 			else if (!memcmp(apexName, "player", 6))
 			{
-				if ((int)myLocal.z == 23440 || (int)myLocal.z == 4656)
-				{
-					continue;
-				}
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
-				if (local.x == 0 || local.y == 0 || local.z == 0) continue;
+				if (local.x == 0 || local.y == 0 || local.z == 0 || (int)local.z == 23440) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
 				if (team == MyTeam) continue;
 				if (cuPoint == MySelfPoint) continue;
@@ -172,24 +168,32 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				//GetEntityType(cuPoint);
 				continue;
 			}
-			//else if (!memcmp(apexName, "prop_script", 12))
-			//{
-			//	int flag = *(int *)&EntityMemCached[m_customScriptInt];
-			//	Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
-			//	float xx = local.x - myLocal.x;
-			//	float yy = local.y - myLocal.y;
-			//	float zz = local.z - myLocal.z;
-			//	float distance = sqrt(xx * xx + yy * yy + zz * zz);
-			//	distance *= 0.01905f;
-			//	if (distance > 100)
-			//	{
-			//		continue;
-			//	}
-			//	ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, NULL };
-			//	tempEntityList.emplace_back(entity);
-			//	GetEntityType(cuPoint);
-			//	continue;
-			//}
+			else if (!memcmp(apexName, "prop_script", 12))
+			{
+				int flag = *(int *)&EntityMemCached[m_customScriptInt];
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				if (distance > 200)
+				{
+					continue;
+				}
+				char * qwq = (char *)malloc(80);
+				GetEntityTypeStr(cuPoint, qwq);
+				if (memcmp(qwq, "mdl/props/caustic_gas_tank", 26))
+				{
+					free(qwq);
+					continue;
+				}
+				free(qwq);
+				ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, NULL };
+				tempEntityList.emplace_back(entity);
+				GetEntityType(cuPoint);
+				continue;
+			}
 			
 		}
 		apexEntityList.clear();
@@ -232,7 +236,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		bullet_gv = *(float *)&weaponData[m_flBulletSpeed + 8];
 		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		Vec3D entityLocal = *(Vec3D *) &aimPlayerData[m_location];
-		Vec3D aimLocal = GetBonePos(aimEntity, Bones::¾±, entityLocal);
+		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
@@ -243,17 +247,17 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 115;
+			float js = distance * 0.01905f / 120;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js);
+			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.9f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		int random = getRandomInt(-150, 400);
+		int random = getRandomInt(-100, 400);
 		aimLocal.z -= (float)(random / 100);
-		aimLocal.x -= (float)(random / 150);
-		aimLocal.y -= (float)(random / 150);
+		aimLocal.x -= (float)(random / 200);
+		aimLocal.y -= (float)(random / 200);
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -267,6 +271,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		angle.z -= punch.z;
 		writeVec3D(MouseAddr, &angle);
+		Sleep(5);
 	}
 	return 0;
 }
