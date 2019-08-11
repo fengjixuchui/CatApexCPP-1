@@ -77,6 +77,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	int len = 65536 << 5;
 	char * EntityListMem = (char *)malloc(len + 1);
 	char * EntityMemCached = (char *)malloc(0x4230);
+	char * prop_scriptBuff = (char *)malloc(512);
 	while (!a) {
 		Sleep(200);
 		memset(EntityListMem, 0, len + 1);
@@ -181,14 +182,12 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				{
 					continue;
 				}
-				char * qwq = (char *)malloc(80);
-				GetEntityTypeStr(cuPoint, qwq);
-				if (memcmp(qwq, "mdl/props/caustic_gas_tank", 26))
+
+				GetEntityTypeStr(cuPoint, prop_scriptBuff);
+				if (memcmp(prop_scriptBuff, "mdl/props/caustic_gas_tank", 26))
 				{
-					free(qwq);
 					continue;
 				}
-				free(qwq);
 				ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, NULL };
 				tempEntityList.emplace_back(entity);
 				GetEntityType(cuPoint);
