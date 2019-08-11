@@ -125,7 +125,6 @@ extern RECT gameRect;
 extern int windowW;
 extern int windowH;
 extern POINT CentWindow;
-extern std::vector<void *> needFrees;
 
 
 //point

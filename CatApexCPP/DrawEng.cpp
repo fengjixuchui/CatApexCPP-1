@@ -93,19 +93,7 @@ void startDraw() {
 		g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
 		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, (float *)&clear_color);
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-
 		g_pSwapChain->Present(1, 0);
-
-		if (needFrees.size() <= 0)
-		{
-			continue;
-		}
-
-		for (void * point : needFrees) {
-			free(point);
-		}
-		needFrees.clear();
 	}
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -130,7 +118,7 @@ bool CreateDeviceD3D(HWND hWnd) {
 	sd.BufferDesc.Width = 0;
 	sd.BufferDesc.Height = 0;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = devMode.dmDisplayFrequency + 5;
+	sd.BufferDesc.RefreshRate.Numerator = devMode.dmDisplayFrequency;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

@@ -9,8 +9,6 @@
 #include <string>
 #include <iostream>
 
-std::vector<void *> needFrees;
-
 void drawMenu();
 void drawEntity();
 using namespace std;
@@ -21,7 +19,9 @@ char * playerData = 0;
 char * weaponData = 0;
 char * weaponModelStr = 0;
 char * entityInfoNameStr = 0;
+char * pNameBuff = 0;
 bool playerDataInit = false;
+char * renderBuff = 0;
 __int64 tempAim = 0;
 
 void draw() {
@@ -31,6 +31,8 @@ void draw() {
 		weaponData = (char *)malloc(m_flBulletSpeed + 16);
 		weaponModelStr = (char *)malloc(50);
 		entityInfoNameStr = (char *)malloc(80);
+		renderBuff = (char *)malloc(512);
+		pNameBuff = (char *)malloc(512);
 		playerDataInit = true;
 	}
 	drawMenu();
@@ -42,12 +44,9 @@ void drawMenu() {
 		return;
 	}
 	ImDrawList *drawList = ImGui::GetBackgroundDrawList();
-	const char * fps =  u8"每帧耗时: %.3f ms / 帧率: %.2f";
-	char * drawStr = (char *) malloc(500);
-	memset(drawStr, 0, 500);
-	sprintf(drawStr, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), drawStr);
-	needFrees.emplace_back(drawStr);
+	const char * fps =  u8"每帧耗时: %.3f ms / 帧率: %.2f\0";
+	sprintf(renderBuff, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), renderBuff);
 	int menuTop = (gameRect.bottom + 50) / 2;
 	int menuIndex = 0;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },
@@ -150,10 +149,8 @@ void drawEntity() {
 			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 				continue;
 			}
-			const char *fNormal = "%s| %d";
-			char *buff = (char *)malloc(128);
-			memset(buff, 0, 128);
-			sprintf(buff, fNormal, entity.name, entity.distance);
+			const char *fNormal = "%s| %d\0";
+			sprintf(renderBuff, fNormal, entity.name, entity.distance);
 		startFor:
 			for (ImVec2 local : itemLocals) {
 				if (local.x == BoxX && local.y == BoxY) {
@@ -162,8 +159,7 @@ void drawEntity() {
 				}
 			}
 			itemLocals.emplace_back(BoxX, BoxY);
-			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
-			needFrees.emplace_back(buff);
+			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, renderBuff);
 		}
 		
 		else if (entity.type == 2)
@@ -185,13 +181,10 @@ void drawEntity() {
 			if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 				continue;
 			}
-			const char *fNormal = "%s| %d";
-			char *buff = (char *)malloc(128);
-			memset(buff, 0, 128);
-			sprintf(buff, fNormal, name, entity.distance);
+			const char *fNormal = "%s| %d\0";
+			sprintf(renderBuff, fNormal, name, entity.distance);
 			itemLocals.emplace_back(BoxX, BoxY);
-			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
-			needFrees.emplace_back(buff);
+			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, renderBuff);
 		}
 		else if (entity.type == 3)
 		{
@@ -212,13 +205,10 @@ void drawEntity() {
 		if (BoxX > windowW || BoxX < -70 || BoxY > windowH || BoxY < 0) {
 			continue;
 		}
-		const char *fNormal = "%s| %d";
-		char *buff = (char *)malloc(128);
-		memset(buff, 0, 128);
-		sprintf(buff, fNormal, name, entity.distance);
+		const char *fNormal = "%s| %d\0";
+		sprintf(renderBuff, fNormal, name, entity.distance);
 		itemLocals.emplace_back(BoxX, BoxY);
-		drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, buff);
-		needFrees.emplace_back(buff);
+		drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, renderBuff);
 		}
 	}
 
@@ -301,22 +291,20 @@ void drawEntity() {
 				WeaponName = (char *) GetWeaponName(weaponModelStr);
 			}
 			
-			const char *fNormal = u8"[%d] 甲:%d 血:%d - %s";
-			const char *fName = u8"[%d] 甲:%d 血:%d【%s】- %s";
-			char *buff = (char *)malloc(512);
-			memset(buff, 0, 512);
+			const char *fNormal = u8"[%d] 甲:%d 血:%d   %s\0";
+			const char *fName = u8"[%d] 甲:%d 血:%d【%s】  %s\0";
+			
 			if (entity.point == aimEntity) {
-				char * pName = readPlayerName(entity.zc);
-				sprintf(buff, fName, entity.distance, armor, blood,  pName, WeaponName);
-				free(pName);
+				readPlayerName(entity.zc, pNameBuff);
+				sprintf(renderBuff, fName, entity.distance, armor, blood, pNameBuff, WeaponName);
 			}
 			else
 			{
-				sprintf(buff, fNormal, entity.distance, armor, blood,  WeaponName);
+				sprintf(renderBuff, fNormal, entity.distance, armor, blood,  WeaponName);
 			}
 			
 			drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
-				playerColor, buff);
+				playerColor, renderBuff);
 			drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.f,
 				playerColor);
 			ImVec2 tmpPiont;
@@ -327,7 +315,6 @@ void drawEntity() {
 			{
 				DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
 			}
-			needFrees.emplace_back(buff);
 		}
 
 		if (status != 0) continue;
@@ -349,12 +336,8 @@ void drawEntity() {
 		}
 		}
 	}
-
-	char* _50text = (char*) malloc(50);
-	memset(_50text, 0, 50);
-	sprintf(_50text, u8"50米内未倒地敌人: %d", _50Players);
-	drawStrockText(drawList, font, myFontSize, { (float)CentWindow.x - 100, 100.f }, _50Players == 0 ? ImColor{ 0, 255, 0 } : ImColor{ 255, 0, 0 }, _50text);
-	needFrees.emplace_back(_50text);
+	sprintf(renderBuff, u8"50米内未倒地敌人: %d\0", _50Players);
+	drawStrockText(drawList, font, myFontSize, { (float)CentWindow.x - 100, 100.f }, _50Players == 0 ? ImColor{ 0, 255, 0 } : ImColor{ 255, 0, 0 }, renderBuff);
 
 	float losInside = 0;
 	Vec3D myLocal = {};
