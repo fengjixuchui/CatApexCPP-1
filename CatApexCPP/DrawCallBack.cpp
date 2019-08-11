@@ -429,7 +429,7 @@ void drawEntity() {
 	}
 	aimEntity = tempAim;
 	if (appConfigs.ZiDongMiaoZhun) {
-		if (GetAsyncKeyState(appConfigs.MiaoZhunReJian) != 0 || GetAsyncKeyState(VK_CONTROL)) {
+		if (GetAsyncKeyState(appConfigs.MiaoZhunReJian) || GetAsyncKeyState(VK_CONTROL)) {
 			if (aimEntity > 0) {
 				aim = true;
 				if (aimThreadStop) {
