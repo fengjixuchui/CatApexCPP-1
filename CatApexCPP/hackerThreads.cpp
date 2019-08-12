@@ -235,16 +235,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		bullet_gv = *(float *)&weaponData[m_flBulletSpeed + 8];
 		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		Vec3D entityLocal = *(Vec3D *) &aimPlayerData[m_location];
-		Vec3D aimLocal = {};
-		if (GetAsyncKeyState(VK_CONTROL))
-		{
-			aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
-		}
-		else
-		{
-			aimLocal = GetBonePos(aimEntity, Bones::аи, entityLocal);
-		}
-		
+		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
@@ -262,6 +253,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.9f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
+		aimLocal.z -= 2.4f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;

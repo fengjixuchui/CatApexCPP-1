@@ -16,6 +16,9 @@ int fontSize;
 HWND hGameWind;
 char * Service_NAME = 0;
 
+#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
+#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积
+
 int main() {
 	std::chrono::milliseconds uptime = std::chrono::milliseconds(GetTickCount64());
 	printf("UP TIME: %lld s\n", uptime.count()/1000);
