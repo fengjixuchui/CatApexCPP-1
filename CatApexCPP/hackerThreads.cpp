@@ -60,7 +60,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		//printf("My: %lld \n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -76,7 +75,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	__int64 cuPoint;
 	int len = 65536 << 5;
 	char * EntityListMem = (char *)malloc(len + 1);
-	char * EntityMemCached = (char *)malloc(0x4230);
+	char * EntityMemCached = (char *)malloc(0x10240);
 	char * prop_scriptBuff = (char *)malloc(512);
 	while (!a) {
 		Sleep(200);
@@ -89,14 +88,13 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
-			memset(EntityMemCached, 0, 0x2048);
 
-			readMem((HANDLE)gamePid, cuPoint, 0x4230, EntityMemCached);
+			readMem((HANDLE)gamePid, cuPoint, 0x10240, EntityMemCached);
 			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
 
 			if (apexNamePoint < 1000000) continue;
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
-			if (!memcmp(apexName, "prop_survival", 13)) {
+			if (!memcmp(apexName, "prop_survival", 14)) {
 				if (!appConfigs.WuPingTouShi) continue;
 				int flag = *(int *)&EntityMemCached[m_customScriptInt];
 				ItemInfo item = entityNames[flag];
@@ -108,7 +106,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
 				if (distance > appConfigs.WuPingFanWei && (item.color != colors.ShiShi || distance > 350)) continue;
-				;
 				if (item.color == colors.ShiShi)
 				{
 					item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
@@ -118,7 +115,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
-			else if (!memcmp(apexName, "player", 6))
+			else if (!memcmp(apexName, "player", 7))
 			{
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				if (local.x == 0 || local.y == 0 || local.z == 0 || (int)local.z == 23440) continue;
@@ -166,7 +163,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				distance *= 0.01905f;
 				ApexEntity entity = { cuPoint, 2, flag, NULL, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
 				tempEntityList.emplace_back(entity);
-				//GetEntityType(cuPoint);
 				continue;
 			}
 			else if (!memcmp(apexName, "prop_script", 12))
@@ -206,7 +202,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
-	bool first = false;
 	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	char * mySelfData = (char *)malloc(m_vecAimPunch + 160);
@@ -220,7 +215,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimEntity = 0;
 			aimThreadStop = true;
 			i = 0;
-			first = false;
 			SuspendThread(hAimThread);
 		}
 		readMem(gamePid, MySelfPoint, m_vecAimPunch + 160, mySelfData);
@@ -267,24 +261,31 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D punch = *(Vec3D *) &mySelfData[m_vecAimPunch];
 		angle.x -= punch.x;
 		angle.y -= punch.y;
+		Vec3D oldAngle = {};
+		readVec3D(MouseAddr, &oldAngle);
 
-		if (!first)
+		int x_index = (angle.x - oldAngle.x) / 0.01;
+		int y_index = (angle.y - oldAngle.y) / 0.01;
+		int allIndex = 0;
+		//Æ½»¬
+		while (true)
 		{
-			Vec3D oldAngle = {};
-			readVec3D(MouseAddr, &oldAngle);
-
-			float x_50 = (angle.x - oldAngle.x) / 30;
-			float y_50 = (angle.y - oldAngle.y) / 30;
-			//Æ½»¬
-			for (size_t i = 0; i < 30; i++)
+			Vec3D moveAngle = oldAngle;
+			if (x_index > allIndex)
 			{
-				Vec3D writeAng = oldAngle;
-				writeAng.x += x_50 * (i + 1);
-				writeAng.y += y_50 * (i + 1);
-				writeVec3D(MouseAddr, &writeAng);
-				usleep(1);
+				moveAngle.x += 0.01;
 			}
-			first = true;
+			if (y_index > allIndex)
+			{
+				moveAngle.y += 0.01;
+			}
+			writeVec3D(MouseAddr, &moveAngle);
+			allIndex++;
+			oldAngle = moveAngle;
+			if (y_index <= allIndex && x_index <= allIndex)
+			{
+				break;
+			}
 		}
 
 		writeVec3D(MouseAddr, &angle);

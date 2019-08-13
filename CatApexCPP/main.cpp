@@ -57,8 +57,8 @@ int main() {
 	hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
 	printf("打开进程 HANDLE: %d\n", hGameProcess);
 	hGameModule = getBaseModule((HANDLE)gamePid);
-	printf("模块地址: %lld\n", hGameModule);
-	unloadDrv();
+	printf("模块地址: %I64x\n", hGameModule);
+	//unloadDrv();
 	printf("卸载驱动\n", hGameModule);
 	ShowWindow(hGameWind, 9);
 	fontSize = 64;

@@ -113,6 +113,10 @@ void drawEntity() {
 	insidePlayer.clear();
 	itemLocals.clear();
 	readWorldArray(&worldArray);
+	//printf("%f   %f   %f   %f\n", worldArray[0][0], worldArray[0][1], worldArray[0][2], worldArray[0][3]);
+	//printf("%f   %f   %f   %f\n", worldArray[1][0], worldArray[1][1], worldArray[1][2], worldArray[1][3]);
+	//printf("%f   %f   %f   %f\n", worldArray[2][0], worldArray[2][1], worldArray[2][2], worldArray[2][3]);
+	//printf("%f   %f   %f   %f\n\n\n", worldArray[3][0], worldArray[3][1], worldArray[3][2], worldArray[3][3]);
 	ImDrawList *drawList = ImGui::GetBackgroundDrawList();
 	drawList->AddCircle({ (float)CentWindow.x, (float)CentWindow.y }, appConfigs.ZiMiaoFanWei, ImColor({ 0x00, 0xff, 0xff }),
 		50, 1.2f);
