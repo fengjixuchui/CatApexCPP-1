@@ -125,7 +125,7 @@ int GetEntityType(__int64 entityPoint) {
 		infoInit = true;
 		entityInfoName = (char *)malloc(80);
 	}
-	readMem(gamePid, entityInfos + 4, 80, entityInfoName);
+	readMem(gamePid, entityInfos, 80, entityInfoName);
 	string infoName = string(entityInfoName, 80);
 	if (infoName.find("bloodhound", 0) != string::npos)
 	{
@@ -180,7 +180,7 @@ int GetEntityType(__int64 entityPoint) {
 void GetEntityTypeStr(__int64 entityPoint, char * entityInfoNameStr) {
 	__int64 entityInfos = 0;
 	readMem(gamePid, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
-	readMem(gamePid, entityInfos + 4, 80, entityInfoNameStr);
+	readMem(gamePid, entityInfos, 80, entityInfoNameStr);
 }
 
 const char * GetWeaponName(char * mName) {

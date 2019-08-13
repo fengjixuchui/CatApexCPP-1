@@ -60,7 +60,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		printf("MY: %I64X\n", MySelfPoint);
+		//printf("MY: %I64X\n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -298,9 +298,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	while (true)
 	{
-		Vec3D angle = {};
-		readVec3D(MouseAddr, &angle);
-		printf("%.2f  %.2f  %.2f\n", angle.x, angle.y, angle.z);
 		Sleep(1000);
 	}
 	return 0;
