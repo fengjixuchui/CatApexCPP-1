@@ -60,6 +60,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
+		printf("MY: %I64X\n", MySelfPoint);
 		Sleep(2000);
 	}
 	return 0;
@@ -263,9 +264,9 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.y -= punch.y;
 		Vec3D oldAngle = {};
 		readVec3D(MouseAddr, &oldAngle);
-
-		int x_index = (angle.x - oldAngle.x) / 0.01;
-		int y_index = (angle.y - oldAngle.y) / 0.01;
+		float PingHua = 0.028;
+		int x_index = (angle.x - oldAngle.x) / PingHua;
+		int y_index = (angle.y - oldAngle.y) / PingHua;
 		int allIndex = 0;
 		//Æ½»¬
 		while (true)
@@ -273,11 +274,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			Vec3D moveAngle = oldAngle;
 			if (x_index > allIndex)
 			{
-				moveAngle.x += 0.01;
+				moveAngle.x += PingHua;
 			}
 			if (y_index > allIndex)
 			{
-				moveAngle.y += 0.01;
+				moveAngle.y += PingHua;
 			}
 			writeVec3D(MouseAddr, &moveAngle);
 			allIndex++;

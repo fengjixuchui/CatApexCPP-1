@@ -29,15 +29,14 @@
 #define m_armorType					0x4248//0x4208
 #define m_helmetType				0x4244//0x4204
 #define m_duckState					0x26A0//0x2660
-#define m_fFlags					0x8C
 #define m_vecVelocity				0x41C//0x418
 #define m_latestPrimaryWeapons		0x1744//0x1704
 #define m_latestNonOffhandWeapons	0x174C//0x170C
 #define m_selectedOffhands			0x174E//0x170E
 #define m_iSignifierName			0x518//0x508
 #define m_customScriptInt			0x1348//0x1308
-#define m_vecAimPunch				0x2114
-#define m_flBulletSpeed				0x1C24
+#define m_vecAimPunch				0x2154//0x2114
+#define m_flBulletSpeed				0x1C6C//0x1C24
 #define m_bone						0xF18//0xED8
 #define m_entityTypeInfo			0x828//0x40
 
