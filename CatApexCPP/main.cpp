@@ -8,6 +8,9 @@
 #include <atlstr.h>
 #include <chrono>;
 
+//#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
+//#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积
+
 using namespace std;
 
 HANDLE gamePid;
@@ -16,8 +19,6 @@ int fontSize;
 HWND hGameWind;
 char * Service_NAME = 0;
 
-#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
-#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积
 
 int main() {
 	std::chrono::milliseconds uptime = std::chrono::milliseconds(GetTickCount64());
@@ -53,8 +54,12 @@ int main() {
 		return -1;
 	}
 	printf("进程ID: %p\n", gamePid);
+	hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
+	printf("打开进程 HANDLE: %d\n", hGameProcess);
 	hGameModule = getBaseModule((HANDLE)gamePid);
 	printf("模块地址: %lld\n", hGameModule);
+	unloadDrv();
+	printf("卸载驱动\n", hGameModule);
 	ShowWindow(hGameWind, 9);
 	fontSize = 64;
 	startThreads();

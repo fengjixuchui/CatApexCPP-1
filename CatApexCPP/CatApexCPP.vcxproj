@@ -193,14 +193,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <PostBuildEvent>
-      <Command>upx -9 $(TargetPath)
-net start W32Time
-date 2016-01-15
-time 00:00:00
-signtool sign /f D:\sign\Binzhoushi-440.pfx /p 440 $(TargetPath)
-w32tm /config /manualpeerlist:"ntp.aliyun.com" /syncfromflags:manual /reliable:yes /update
-w32tm /resync
-w32tm /resync</Command>
+      <Command>upx -9 $(TargetPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

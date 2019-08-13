@@ -206,6 +206,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
+	bool first = false;
 	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	char * mySelfData = (char *)malloc(m_vecAimPunch + 160);
@@ -219,6 +220,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimEntity = 0;
 			aimThreadStop = true;
 			i = 0;
+			first = false;
 			SuspendThread(hAimThread);
 		}
 		readMem(gamePid, MySelfPoint, m_vecAimPunch + 160, mySelfData);
@@ -253,7 +255,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.9f;
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		aimLocal.z -= 2.4f;
+		aimLocal.z -= 2.2f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -265,9 +267,28 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D punch = *(Vec3D *) &mySelfData[m_vecAimPunch];
 		angle.x -= punch.x;
 		angle.y -= punch.y;
-		angle.z -= punch.z;
+
+		if (!first)
+		{
+			Vec3D oldAngle = {};
+			readVec3D(MouseAddr, &oldAngle);
+
+			float x_50 = (angle.x - oldAngle.x) / 30;
+			float y_50 = (angle.y - oldAngle.y) / 30;
+			//Æ½»¬
+			for (size_t i = 0; i < 30; i++)
+			{
+				Vec3D writeAng = oldAngle;
+				writeAng.x += x_50 * (i + 1);
+				writeAng.y += y_50 * (i + 1);
+				writeVec3D(MouseAddr, &writeAng);
+				usleep(1);
+			}
+			first = true;
+		}
+
 		writeVec3D(MouseAddr, &angle);
-		Sleep(5);
+		usleep(50);
 	}
 	return 0;
 }
@@ -275,6 +296,9 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	while (true)
 	{
+		Vec3D angle = {};
+		readVec3D(MouseAddr, &angle);
+		printf("%.2f  %.2f  %.2f\n", angle.x, angle.y, angle.z);
 		Sleep(1000);
 	}
 	return 0;
