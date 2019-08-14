@@ -60,8 +60,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		//printf("MY: %I64X\n", MySelfPoint);
-		Sleep(2000);
+		Sleep(1000);
 	}
 	return 0;
 }
@@ -121,8 +120,8 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				if (local.x == 0 || local.y == 0 || local.z == 0 || (int)local.z == 23440) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
-				if (team == MyTeam) continue;
-				if (cuPoint == MySelfPoint) continue;
+				//if (team == MyTeam) continue;
+				//if (cuPoint == MySelfPoint) continue;
 				float xx = local.x - myLocal.x;
 				float yy = local.y - myLocal.y;
 				float zz = local.z - myLocal.z;
@@ -236,7 +235,6 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
-		printf("%f    %f    %f \n", VectorVec3D.x, VectorVec3D.y, VectorVec3D.z);
 		readVec3D(MouseAddr - 28, &myLocal);
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
@@ -244,7 +242,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 98;
+			float js = distance * 0.01905f / 97;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
@@ -299,6 +297,17 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	while (true)
 	{
+
+		//char * buff = (char *) malloc(512);
+		//for (size_t i = 0; i < 65535; i++)
+		//{
+
+		//	readPlayerName(i, buff);
+		//	if (!memcmp(buff, "juyazhuo", 8))
+		//	{
+		//		printf("YES: %d\n", i);
+		//	}
+		//}
 		Sleep(1000);
 	}
 	return 0;

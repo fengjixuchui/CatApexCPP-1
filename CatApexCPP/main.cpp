@@ -6,7 +6,7 @@
 #include "DrawEng.h"
 #include "hackerThreads.h"
 #include <atlstr.h>
-#include <chrono>;
+#include <chrono>
 
 //#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
 //#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积

@@ -19,10 +19,11 @@
 #define m_location					0x13C
 #define m_mouse						0x21F8//0x21B8
 #define m_renderArray				0x1A93D0
+#define m_nameArrayListSub			0xA40
 
 #define m_iHealth					0x3E0
 #define m_iMaxHealth				0x510//0x500
-#define m_shieldHealth				0x164
+#define m_shieldHealthMax			0x164
 #define m_iTeamNum					0x3F0
 #define m_lifeState					0x730//0x720
 #define m_bleedoutState				0x23B8//0x2378

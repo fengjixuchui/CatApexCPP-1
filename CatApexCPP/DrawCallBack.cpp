@@ -258,7 +258,7 @@ void drawEntity() {
 		}
 		readMem((HANDLE)gamePid, entity.point, m_bleedoutState + 8, playerData);
 		int blood = *(int *)&playerData[m_iHealth];
-		int armor = *(int *)&playerData[m_shieldHealth - 4];
+		int armor = *(int *)&playerData[m_shieldHealthMax - 4];
 		int status = *(int *)&playerData[m_bleedoutState];
 		if (blood <= 0 || blood > 100 || (blood == 50 && armor == 0)) continue;
 		if (status != 0) {

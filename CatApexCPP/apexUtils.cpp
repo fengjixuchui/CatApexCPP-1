@@ -23,7 +23,7 @@ void readPlayerName(int index, char * buff) {
 	readMem((HANDLE)gamePid, hGameModule + NameList, sizeof(nameArray), &nameArray);
 	nameArray = nameArray + index * 8;
 	__int64 namePoint = 0;
-	readMem((HANDLE)gamePid, nameArray + 2560, sizeof(namePoint), &namePoint);
+	readMem((HANDLE)gamePid, nameArray + m_nameArrayListSub, sizeof(namePoint), &namePoint);
 	readMem((HANDLE)gamePid, namePoint, 256, buff);
 }
 
