@@ -58,8 +58,8 @@ int main() {
 	printf("打开进程 HANDLE: %d\n", hGameProcess);
 	hGameModule = getBaseModule((HANDLE)gamePid);
 	printf("模块地址: %I64x\n", hGameModule);
-	unloadDrv();
-	printf("卸载驱动\n", hGameModule);
+	//unloadDrv();
+	//printf("卸载驱动\n", hGameModule);
 	ShowWindow(hGameWind, 9);
 	fontSize = 64;
 	startThreads();

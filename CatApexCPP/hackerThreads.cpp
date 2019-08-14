@@ -236,6 +236,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
+		printf("%f    %f    %f \n", VectorVec3D.x, VectorVec3D.y, VectorVec3D.z);
 		readVec3D(MouseAddr - 28, &myLocal);
 		float xx = aimLocal.x - myLocal.x;
 		float yy = aimLocal.y - myLocal.y;
@@ -243,14 +244,14 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 120;
+			float js = distance * 0.01905f / 98;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js) * 0.9f;
+			aimLocal.z += ((VectorVec3D.z * flTime) * js);
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		aimLocal.z -= 2.2f;
+		aimLocal.z -= 1.98f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -262,32 +263,32 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D punch = *(Vec3D *) &mySelfData[m_vecAimPunch];
 		angle.x -= punch.x;
 		angle.y -= punch.y;
-		Vec3D oldAngle = {};
-		readVec3D(MouseAddr, &oldAngle);
-		float PingHua = 0.028;
-		int x_index = (angle.x - oldAngle.x) / PingHua;
-		int y_index = (angle.y - oldAngle.y) / PingHua;
-		int allIndex = 0;
-		//Æ½»¬
-		while (true)
-		{
-			Vec3D moveAngle = oldAngle;
-			if (x_index > allIndex)
-			{
-				moveAngle.x += PingHua;
-			}
-			if (y_index > allIndex)
-			{
-				moveAngle.y += PingHua;
-			}
-			writeVec3D(MouseAddr, &moveAngle);
-			allIndex++;
-			oldAngle = moveAngle;
-			if (y_index <= allIndex && x_index <= allIndex)
-			{
-				break;
-			}
-		}
+		//Vec3D oldAngle = {};
+		//readVec3D(MouseAddr, &oldAngle);
+		//float PingHua = 0.028;
+		//int x_index = (angle.x - oldAngle.x) / PingHua;
+		//int y_index = (angle.y - oldAngle.y) / PingHua;
+		//int allIndex = 0;
+		////Æ½»¬
+		//while (true)
+		//{
+		//	Vec3D moveAngle = oldAngle;
+		//	if (x_index > allIndex)
+		//	{
+		//		moveAngle.x += PingHua;
+		//	}
+		//	if (y_index > allIndex)
+		//	{
+		//		moveAngle.y += PingHua;
+		//	}
+		//	writeVec3D(MouseAddr, &moveAngle);
+		//	allIndex++;
+		//	oldAngle = moveAngle;
+		//	if (y_index <= allIndex && x_index <= allIndex)
+		//	{
+		//		break;
+		//	}
+		//}
 
 		writeVec3D(MouseAddr, &angle);
 		usleep(50);
