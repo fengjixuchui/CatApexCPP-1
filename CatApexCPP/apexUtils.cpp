@@ -272,6 +272,10 @@ const char * GetWeaponName(char * mName) {
 	{
 		return u8"¹şÎÖ¿Ë";
 	}
+	else if (!strcmp("grenades", mName))
+	{
+		return u8"Ğ¡ĞÄºÙºÙºÙ";
+	}
 	else
 	{
 		return mName;

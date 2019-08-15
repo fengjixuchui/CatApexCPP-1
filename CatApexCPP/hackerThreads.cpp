@@ -60,6 +60,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
+		printf("MY: %I64X\n", MySelfPoint);
 		Sleep(1000);
 	}
 	return 0;
@@ -120,8 +121,8 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
 				if (local.x == 0 || local.y == 0 || local.z == 0 || (int)local.z == 23440) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
-				//if (team == MyTeam) continue;
-				//if (cuPoint == MySelfPoint) continue;
+				if (team == MyTeam) continue;
+				if (cuPoint == MySelfPoint) continue;
 				float xx = local.x - myLocal.x;
 				float yy = local.y - myLocal.y;
 				float zz = local.z - myLocal.z;
@@ -218,7 +219,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			SuspendThread(hAimThread);
 		}
 		readMem(gamePid, MySelfPoint, m_vecAimPunch + 160, mySelfData);
-		weaponEntityid = *(int *)&mySelfData[m_latestPrimaryWeapons];
+		weaponEntityid = *(int *)&mySelfData[m_latestPrimaryWeapons + m_allWeapons];
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
 			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
@@ -249,7 +250,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.z += ((VectorVec3D.z * flTime) * js);
 			aimLocal.z += 700.f * bullet_gv * (flTime * flTime);
 		}
-		aimLocal.z -= 1.98f;
+		aimLocal.z -= 2.08f;
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
@@ -295,20 +296,21 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 }
 
 DWORD WINAPI HentaiThread(LPVOID lpParam) {
+
 	while (true)
 	{
-
-		//char * buff = (char *) malloc(512);
-		//for (size_t i = 0; i < 65535; i++)
-		//{
-
-		//	readPlayerName(i, buff);
-		//	if (!memcmp(buff, "juyazhuo", 8))
-		//	{
-		//		printf("YES: %d\n", i);
-		//	}
-		//}
-		Sleep(1000);
+		int weaponEntityid = 0;
+		__int64 weaponEntityPoint = 0;
+		readMem(gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		weaponEntityid &= 0xFFFF;
+		if (weaponEntityid > 0 && weaponEntityid < 65535) {
+			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+		}
+		float w = 0.f;
+		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
+		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
+		//printf("WEAPON: %I64X\n", weaponEntityPoint);
+		Sleep(1);
 	}
 	return 0;
 }

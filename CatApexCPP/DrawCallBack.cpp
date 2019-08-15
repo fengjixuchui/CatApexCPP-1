@@ -271,7 +271,7 @@ void drawEntity() {
 		if (appConfigs.FangKuang) {
 			int weaponEntityid = 0;
 			__int64 weaponEntityPoint = 0;
-			weaponEntityid = *(int *)&playerData[m_latestPrimaryWeapons];
+			weaponEntityid = *(int *)&playerData[m_latestPrimaryWeapons + m_allWeapons];
 			weaponEntityid &= 0xFFFF;
 			if (weaponEntityid > 0 && weaponEntityid < 65535) {
 				readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
@@ -280,6 +280,7 @@ void drawEntity() {
 			if (entity.distance < 200)
 			{
 				GetEntityTypeStr(weaponEntityPoint, entityInfoNameStr);
+				printf("%s\n", entityInfoNameStr);
 				if (!memcmp("mdl/weapons/", entityInfoNameStr, 12) || !memcmp("mdl/Weapons/", entityInfoNameStr, 12))
 				{
 					char * newModelName = &entityInfoNameStr[12];

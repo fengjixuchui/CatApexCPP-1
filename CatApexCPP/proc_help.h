@@ -33,6 +33,7 @@
 #define m_vecVelocity				0x41C//0x418
 #define m_latestPrimaryWeapons		0x1744//0x1704
 #define m_latestNonOffhandWeapons	0x174C//0x170C
+#define m_allWeapons				0x24
 #define m_selectedOffhands			0x174E//0x170E
 #define m_iSignifierName			0x518//0x508
 #define m_customScriptInt			0x1348//0x1308
@@ -40,6 +41,8 @@
 #define m_flBulletSpeed				0x1C6C//0x1C24
 #define m_bone						0xF18//0xED8
 #define m_entityTypeInfo			0x828//0x40
+#define m_flWeaponSpread1			0x13B0
+#define m_flWeaponSpread2			0x13C0
 
 typedef struct __ColorStruct {
 	unsigned int ShiShi;
