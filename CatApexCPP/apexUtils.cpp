@@ -49,15 +49,15 @@ void Vec3DBoneToScreen(Vec3D local, ImVec2 * point) {
 		worldArray[3][3];
 	if (ViewW < 0.01) return;
 	ViewW = 1 / ViewW;
-	point->x = gamePoint.x + CentWindow.x +(
-		worldArray[0][0] * local.x + 
+	point->x = gamePoint.x + CentWindow.x + (
+		worldArray[0][0] * local.x +
 		worldArray[0][1] * local.y +
 		worldArray[0][2] * local.z +
 		worldArray[0][3]
 		) * ViewW * CentWindow.x;
 
 	point->y = gamePoint.y + CentWindow.y - (
-		worldArray[1][0] * local.x + 
+		worldArray[1][0] * local.x +
 		worldArray[1][1] * local.y +
 		worldArray[1][2] * local.z +
 		worldArray[1][3]
@@ -167,7 +167,7 @@ int GetEntityType(__int64 entityPoint) {
 	{
 		return 9; // »ªÉ­
 	}
-	else 
+	else
 	{
 		if (!infoName.empty() && entityInfoName[0] != 0)
 		{
@@ -188,7 +188,7 @@ const char * GetWeaponName(char * mName) {
 	{
 		return u8"ÊÖÎÞ´çÌú";
 	}
-	else if (! strcmp("lstar", mName))
+	else if (!strcmp("lstar", mName))
 	{
 		return "LSTAR";
 	}

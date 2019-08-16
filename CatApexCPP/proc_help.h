@@ -90,6 +90,7 @@ typedef struct EntityStruct {
 	int zc;
 	int distance;
 	ApexItem item;
+	const char * WeaponName;
 } ApexEntity;
 
 typedef struct __Vec3D {

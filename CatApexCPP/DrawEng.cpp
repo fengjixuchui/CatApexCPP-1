@@ -30,7 +30,7 @@ void CleanupRenderTarget();
 void startDraw() {
 	int clsLen = getRandomInt(30, 50);
 	int wndLen = getRandomInt(40, 60);
-	char * clsName = (char *) malloc(clsLen);
+	char * clsName = (char *)malloc(clsLen);
 	char * wndName = (char *)malloc(wndLen);
 	memset(clsName, 0, clsLen);
 	memset(wndName, 0, wndLen);
@@ -238,5 +238,4 @@ void drawLine(ImDrawList * drawList, ImVec4 rect, float px, ImColor col) {
 	float ex = rect.z + gameRect.left;
 	float ey = rect.w + gameRect.top;
 	drawList->AddLine({ sx, sy }, { ex, ey }, col, px);
-
 }

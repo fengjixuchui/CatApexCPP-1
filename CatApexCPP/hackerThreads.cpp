@@ -78,8 +78,11 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	char * EntityListMem = (char *)malloc(len + 1);
 	char * EntityMemCached = (char *)malloc(0x10240);
 	char * prop_scriptBuff = (char *)malloc(512);
+	char * weaponData = (char *)malloc(m_flBulletSpeed + 16);
+	char * weaponModelStr = (char *)malloc(50);
+	char * entityInfoNameStr = (char *)malloc(80);
 	while (!a) {
-		Sleep(200);
+		Sleep(300);
 		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
@@ -89,10 +92,8 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
-
 			readMem((HANDLE)gamePid, cuPoint, 0x10240, EntityMemCached);
 			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
-
 			if (apexNamePoint < 1000000) continue;
 			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
 			if (!memcmp(apexName, "prop_survival", 14)) {
@@ -112,7 +113,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
 				}
 				ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
-			
+
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -129,7 +130,28 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
 				if (distance > appConfigs.TouShiFanWei) continue;
-				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance };
+				int weaponEntityid = 0;
+				__int64 weaponEntityPoint = 0;
+				weaponEntityid = *(int *)&EntityMemCached[m_latestPrimaryWeapons + m_allWeapons];
+				weaponEntityid &= 0xFFFF;
+				if (weaponEntityid > 0 && weaponEntityid < 65535) {
+					readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+				}
+				GetEntityTypeStr(weaponEntityPoint, entityInfoNameStr);
+				printf("%s\n", entityInfoNameStr);
+				if (!memcmp("mdl/weapons/", entityInfoNameStr, 12) || !memcmp("mdl/Weapons/", entityInfoNameStr, 12))
+				{
+					char * newModelName = &entityInfoNameStr[12];
+					for (size_t i = 0; i < 50; i++)
+					{
+						if (newModelName[i] == '/') {
+							weaponModelStr[i] = '\0';
+							break;
+						}
+						weaponModelStr[i] = newModelName[i];
+					}
+				}
+				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance, {}, GetWeaponName(weaponModelStr) };
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -142,16 +164,16 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float zz = local.z - myLocal.z;
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
-				char * qwq = (char *) malloc(80);
+				char * qwq = (char *)malloc(80);
 				GetEntityTypeStr(cuPoint, qwq);
-				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
+				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, {} };
 				//GetEntityType(cuPoint);
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
 			else if (!memcmp(apexName, "npc_frag", 8))
 			{
-				if (! appConfigs.XianShiZhaZhu)
+				if (!appConfigs.XianShiZhaZhu)
 				{
 					continue;
 				}
@@ -162,7 +184,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				float zz = local.z - myLocal.z;
 				float distance = sqrt(xx * xx + yy * yy + zz * zz);
 				distance *= 0.01905f;
-				ApexEntity entity = { cuPoint, 2, flag, NULL, (char *)"", ImColor(255, 0, 0), 0, distance, NULL };
+				ApexEntity entity = { cuPoint, 2, flag, NULL, (char *)"", ImColor(255, 0, 0), 0, distance, {} };
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -185,12 +207,11 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				{
 					continue;
 				}
-				ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, NULL };
+				ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, {} };
 				tempEntityList.emplace_back(entity);
 				GetEntityType(cuPoint);
 				continue;
 			}
-			
 		}
 		apexEntityList.clear();
 		apexEntityList = tempEntityList;
@@ -203,12 +224,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
-	char * weaponData = (char *) malloc(m_flBulletSpeed + 16);
+	char * weaponData = (char *)malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	char * mySelfData = (char *)malloc(m_vecAimPunch + 160);
 	while (true) {
 		int weaponEntityid = 0;
-		__int64 weaponEntityPoint = 0; 
+		__int64 weaponEntityPoint = 0;
 		float bulletSpeed = 0;
 		float bullet_gv = 0;
 
@@ -231,10 +252,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		}
 		bullet_gv = *(float *)&weaponData[m_flBulletSpeed + 8];
 		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
-		Vec3D entityLocal = *(Vec3D *) &aimPlayerData[m_location];
+		Vec3D entityLocal = *(Vec3D *)&aimPlayerData[m_location];
 		Vec3D aimLocal = GetBonePos(aimEntity, Bones::head, entityLocal);
 		Vec3D myLocal = {};
-		Vec3D VectorVec3D = *(Vec3D *) &aimPlayerData[m_vecVelocity];
+		Vec3D VectorVec3D = *(Vec3D *)&aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
 		readVec3D(MouseAddr - 28, &myLocal);
 		float xx = aimLocal.x - myLocal.x;
@@ -259,7 +280,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
 		Vec3D angle = { tb, lf, 0.f };
-		Vec3D punch = *(Vec3D *) &mySelfData[m_vecAimPunch];
+		Vec3D punch = *(Vec3D *)&mySelfData[m_vecAimPunch];
 		angle.x -= punch.x;
 		angle.y -= punch.y;
 		//Vec3D oldAngle = {};

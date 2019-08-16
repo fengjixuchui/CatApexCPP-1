@@ -90,28 +90,18 @@ DWORD64 getBaseModule(HANDLE proc)
 
 void readMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
-	if (IsBadWritePtr(data, size))
-	{
-		MessageBoxA(NULL, "RW ERROR", NULL, 0);
-		return;
-	}
-	//RWStruct rs = { proc, data, (DWORD64)size, addr };
-	//DWORD outSize;
-	//DeviceIoControl(hDevice, IOCTL_IO_READ, &rs, sizeof(rs), NULL, 0, &outSize, 0);
-	ReadProcessMemory(hGameProcess, (LPCVOID)addr, data, size, 0);
+	RWStruct rs = { proc, data, (DWORD64)size, addr };
+	DWORD outSize;
+	DeviceIoControl(hDevice, IOCTL_IO_READ, &rs, sizeof(rs), NULL, 0, &outSize, 0);
+	//ReadProcessMemory(hGameProcess, (LPCVOID)addr, data, size, 0);
 }
 
 void writeMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
-	if (IsBadReadPtr(data, size))
-	{
-		MessageBoxA(NULL, "RW ERROR", NULL, 0);
-		return;
-	}
-	//RWStruct rs = { proc, data, (DWORD64)size, addr };
-	//DWORD outSize;
-	//DeviceIoControl(hDevice, IOCTL_IO_WRITE, &rs, sizeof(rs), NULL, 0, &outSize, 0);
-	WriteProcessMemory(hGameProcess, (LPVOID)addr, data, size, 0);
+	RWStruct rs = { proc, data, (DWORD64)size, addr };
+	DWORD outSize;
+	DeviceIoControl(hDevice, IOCTL_IO_WRITE, &rs, sizeof(rs), NULL, 0, &outSize, 0);
+	//WriteProcessMemory(hGameProcess, (LPVOID)addr, data, size, 0);
 }
 
 void protect()
