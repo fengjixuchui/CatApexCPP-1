@@ -33,7 +33,6 @@ POINT CentWindow;
 
 
 DWORD WINAPI InfoThread(LPVOID lpParam) {
-	CoInitialize(0);
 	int a = false;
 	CentWindow = { 0, 0 };
 	while (!a) {
@@ -66,7 +65,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EntityManager(LPVOID lpParam) {
-	CoInitialize(0);
 	initEntityNames();
 	initBones();
 	EntityListPoint = hGameModule + CEntityList;
@@ -218,7 +216,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 }
 
 DWORD WINAPI SuperAim(LPVOID lpParam) {
-	CoInitialize(0);
 	aim = false;
 	aimEntity = 0;
 	int i = 0;
