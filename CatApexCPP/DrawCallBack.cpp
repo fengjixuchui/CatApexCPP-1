@@ -287,7 +287,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 160)
+				if (entity.distance < 100)
 				{
 					DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
 				}

@@ -60,7 +60,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		printf("MY: %I64X\n", MySelfPoint);
 		Sleep(1000);
 	}
 	return 0;
@@ -138,7 +137,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 				}
 				GetEntityTypeStr(weaponEntityPoint, entityInfoNameStr);
-				printf("%s\n", entityInfoNameStr);
 				if (!memcmp("mdl/weapons/", entityInfoNameStr, 12) || !memcmp("mdl/Weapons/", entityInfoNameStr, 12))
 				{
 					char * newModelName = &entityInfoNameStr[12];

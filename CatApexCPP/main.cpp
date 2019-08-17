@@ -54,8 +54,8 @@ int main() {
 		return -1;
 	}
 	printf("进程ID: %p\n", gamePid);
-	hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
-	printf("打开进程 HANDLE: %d\n", hGameProcess);
+	//hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
+	//printf("打开进程 HANDLE: %d\n", hGameProcess);
 	hGameModule = getBaseModule((HANDLE)gamePid);
 	printf("模块地址: %I64x\n", hGameModule);
 	//unloadDrv();
