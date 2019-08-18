@@ -175,7 +175,7 @@ int getRandomInt(int min, int max);
 
 enum Bones : int {
 	head = 12,
-	¾± = 11,
+	neck = 11,
 	ÐØ = 7,
 	¸¹ = 6,
 	ŒÅ = 5,

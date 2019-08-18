@@ -39,10 +39,10 @@ void drawMenu() {
 		return;
 	}
 	ImDrawList *drawList = ImGui::GetBackgroundDrawList();
-	const char * fps = u8"每帧耗时: %.3f ms / 帧率: %.2f\0";
+	const char * fps = u8"每帧耗时: %.1f ms / 帧率: %.1f\0";
 	sprintf(renderBuff, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), renderBuff);
-	int menuTop = (gameRect.bottom + 50) / 2;
+	int menuTop = (gameRect.bottom + 150) / 2;
 	int menuIndex = 0;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },
 		u8"CatApex C++ 64位版本 [Home]键显隐");
@@ -246,10 +246,12 @@ void drawEntity() {
 			if (BoxX - (BoxY1 - BoxY) / 4 > windowW || BoxX - (BoxY1 - BoxY) / 4 < -70 || BoxY1 > windowH || BoxY1 < 0) continue;
 
 			ImColor playerColor;
-			if (aimEntity == entity.point) {
+			if (aimEntity == entity.point)
+			{
 				playerColor = ImColor({ 0xff, 0x50, 0x80 });
 			}
-			else {
+			else
+			{
 				playerColor = ImColor({ 0x00, 0xff, 0xff });
 			}
 			readMem((HANDLE)gamePid, entity.point, m_bleedoutState + 8, playerData);
@@ -287,7 +289,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 100)
+				if (entity.distance < 120)
 				{
 					DrawBone(drawList, entity.point, entityLocal, font, myFontSize, ImColor({ 0x00, 0xff, 0xff }));
 				}

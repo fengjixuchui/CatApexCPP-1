@@ -335,7 +335,7 @@ void initBones() {
 	//寻血
 	{
 		寻血[0][0] = Bones::head;
-		寻血[0][1] = Bones::颈;
+		寻血[0][1] = Bones::neck;
 		寻血[0][2] = Bones::胸;
 		寻血[0][3] = Bones::腹;
 		寻血[0][4] = Bones::屌;
@@ -369,7 +369,7 @@ void initBones() {
 	//直布
 	{
 		直布[0][0] = Bones::head;
-		直布[0][1] = Bones::颈;
+		直布[0][1] = Bones::neck;
 		直布[0][2] = Bones::胸;
 		直布[0][3] = Bones::腹;
 		直布[0][4] = Bones::屌;
@@ -403,7 +403,7 @@ void initBones() {
 	//命脉
 	{
 		命脉[0][0] = Bones::head;
-		命脉[0][1] = Bones::颈;
+		命脉[0][1] = Bones::neck;
 		命脉[0][2] = Bones::胸;
 		命脉[0][3] = Bones::腹;
 		命脉[0][4] = Bones::屌;
@@ -437,7 +437,7 @@ void initBones() {
 	//探路
 	{
 		探路[0][0] = Bones::head;
-		探路[0][1] = Bones::颈;
+		探路[0][1] = Bones::neck;
 		探路[0][2] = Bones::胸;
 		探路[0][3] = Bones::腹;
 		探路[0][4] = Bones::屌;
@@ -471,7 +471,7 @@ void initBones() {
 	//动力
 	{
 		动力[0][0] = Bones::head;
-		动力[0][1] = Bones::颈;
+		动力[0][1] = Bones::neck;
 		动力[0][2] = Bones::胸;
 		动力[0][3] = Bones::腹;
 		动力[0][4] = Bones::屌;
@@ -505,7 +505,7 @@ void initBones() {
 	//恶灵
 	{
 		恶灵[0][0] = Bones::head;
-		恶灵[0][1] = Bones::颈;
+		恶灵[0][1] = Bones::neck;
 		恶灵[0][2] = Bones::胸;
 		恶灵[0][3] = Bones::腹;
 		恶灵[0][4] = Bones::屌;
@@ -539,7 +539,7 @@ void initBones() {
 	//班加
 	{
 		班加[0][0] = Bones::head;
-		班加[0][1] = Bones::颈;
+		班加[0][1] = Bones::neck;
 		班加[0][2] = Bones::胸;
 		班加[0][3] = Bones::腹;
 		班加[0][4] = Bones::屌;
@@ -573,7 +573,7 @@ void initBones() {
 	//侵蚀
 	{
 		侵蚀[0][0] = Bones::head;
-		侵蚀[0][1] = Bones::颈;
+		侵蚀[0][1] = Bones::neck;
 		侵蚀[0][2] = Bones::胸;
 		侵蚀[0][3] = Bones::腹;
 		侵蚀[0][4] = Bones::屌;
@@ -607,7 +607,7 @@ void initBones() {
 	//幻象
 	{
 		幻象[0][0] = Bones::head;
-		幻象[0][1] = Bones::颈;
+		幻象[0][1] = Bones::neck;
 		幻象[0][2] = Bones::胸;
 		幻象[0][3] = Bones::腹;
 		幻象[0][4] = Bones::屌;
@@ -641,7 +641,7 @@ void initBones() {
 	//华森
 	{
 		华森[0][0] = Bones::head;
-		华森[0][1] = Bones::颈;
+		华森[0][1] = Bones::neck;
 		华森[0][2] = Bones::胸;
 		华森[0][3] = Bones::腹;
 		华森[0][4] = Bones::屌;

@@ -29,18 +29,25 @@ void readPlayerName(int index, char * buff) {
 
 Vec3D GetBonePos(__int64 entity, int ID, Vec3D entityLocal) {
 	float matrix[128][3][4];
-	__int64 pBoneMatrix = 0;
-	readMem(gamePid, entity + m_bone, sizeof(pBoneMatrix), &pBoneMatrix);
+	GetBoneArray(entity, &matrix);
+	return CalcBonePos(matrix, ID, entityLocal);
+}
 
-	readMem(gamePid, pBoneMatrix, sizeof(matrix), &matrix);
-
-
+Vec3D CalcBonePos(float matrix[128][3][4], int ID, Vec3D entityLocal) {
 	Vec3D bone_pos = { matrix[ID][0][3], matrix[ID][1][3], matrix[ID][2][3] };
 	bone_pos.x += entityLocal.x;
 	bone_pos.y += entityLocal.y;
 	bone_pos.z += entityLocal.z;
 
 	return bone_pos;
+}
+
+
+void GetBoneArray(__int64 entity, void * arrayBuf) {
+	__int64 pBoneMatrix = 0;
+	float matrix[128][3][4];
+	readMem(gamePid, entity + m_bone, sizeof(pBoneMatrix), &pBoneMatrix);
+	readMem(gamePid, pBoneMatrix, sizeof(matrix), arrayBuf);
 }
 
 void Vec3DBoneToScreen(Vec3D local, ImVec2 * point) {
@@ -285,26 +292,28 @@ const char * GetWeaponName(char * mName) {
 void drawBones(ImDrawList * drawList, __int64 entity, Vec3D local, ImColor col, int boneIndex[3][16]) {
 	ImVec2 lasteIndex = {};
 	ImVec2 cuIndex = {};
+	float matrix[128][3][4];
+	GetBoneArray(entity, &matrix);
 	for (size_t i = 1; i < 5; i++)
 	{
-		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][0], local), &lasteIndex);
-		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[0][i], local), &cuIndex);
+		if (i == 1) Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[0][0], local), &lasteIndex);
+		Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[0][i], local), &cuIndex);
 		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
 
 	for (size_t i = 1; i < 16; i++)
 	{
-		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][0], local), &lasteIndex);
-		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[1][i], local), &cuIndex);
+		if (i == 1) Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[1][0], local), &lasteIndex);
+		Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[1][i], local), &cuIndex);
 		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
 
 	for (size_t i = 1; i < 7; i++)
 	{
-		if (i == 1) Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][0], local), &lasteIndex);
-		Vec3DBoneToScreen(GetBonePos(entity, boneIndex[2][i], local), &cuIndex);
+		if (i == 1) Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[2][0], local), &lasteIndex);
+		Vec3DBoneToScreen(CalcBonePos(matrix, boneIndex[2][i], local), &cuIndex);
 		drawList->AddLine(lasteIndex, cuIndex, col, 1.f);
 		lasteIndex = cuIndex;
 	}
