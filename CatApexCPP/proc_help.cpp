@@ -176,20 +176,19 @@ void startThreads() {
 
 void rand_str(char *str, const int len)
 {
-	srand(time(NULL));
 	int i;
 	for (i = 0; i < len; ++i)
 	{
-		switch ((rand() % 3))
+		switch ((getRandomInt(0, RAND_MAX) % 3))
 		{
 		case 1:
-			str[i] = 'A' + rand() % 26;
+			str[i] = 'A' + getRandomInt(0, RAND_MAX) % 26;
 			break;
 		case 2:
-			str[i] = 'a' + rand() % 26;
+			str[i] = 'a' + getRandomInt(0, RAND_MAX) % 26;
 			break;
 		default:
-			str[i] = '0' + rand() % 10;
+			str[i] = '0' + getRandomInt(0, RAND_MAX) % 10;
 			break;
 		}
 	}
