@@ -80,7 +80,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	char * entityInfoNameStr = (char *)malloc(80);
 	while (!a) {
 		Sleep(300);
-		memset(EntityListMem, 0, len + 1);
 		vector<ApexEntity> tempEntityList;
 		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
 		Vec3D myLocal = {};
@@ -267,7 +266,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
 			aimLocal.z += ((VectorVec3D.z * flTime) * js);
-			aimLocal.z += 693.f * bullet_gv * (flTime * flTime);
+			aimLocal.z += 680.f * bullet_gv * (flTime * flTime);
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;

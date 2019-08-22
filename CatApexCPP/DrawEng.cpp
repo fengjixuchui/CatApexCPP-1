@@ -52,7 +52,7 @@ void startDraw() {
 		NULL,
 		GetModuleHandle(NULL),
 		NULL);
-	::ShowWindow(myHWND, 10);
+	::ShowWindow(myHWND, SW_SHOWDEFAULT);
 	::UpdateWindow(myHWND);
 	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
 	MARGINS marg = { -1 };
@@ -64,7 +64,6 @@ void startDraw() {
 	}
 	ImGui::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
-	(void)io;
 	ImGui_ImplWin32_Init(myHWND);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 	io.Fonts->AddFontDefault();
@@ -72,26 +71,22 @@ void startDraw() {
 		io.Fonts->GetGlyphRangesChineseFull());
 	IM_ASSERT(font != NULL);
 	// Our state
-	ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.00f, 0.00f);
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
+	const float _0f = 0.f;
+	ImGui_ImplDX11_NewFrame();
+	g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
 	while (msg.message != WM_QUIT) {
 		if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 			continue;
 		}
-		::ShowWindow(myHWND, 10);
-		::UpdateWindow(myHWND);
-		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-
 		draw();
-
 		ImGui::Render();
-		g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, (float *)&clear_color);
+		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, &_0f);
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		g_pSwapChain->Present(0, 0);
 	}

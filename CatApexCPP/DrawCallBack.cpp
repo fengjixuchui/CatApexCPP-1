@@ -23,7 +23,7 @@ char * renderBuff = 0;
 __int64 tempAim = 0;
 
 void draw() {
-	Sleep(5);
+	Sleep(6);
 	if (!playerDataInit)
 	{
 		playerData = (char *)malloc(m_bleedoutState + 8);
@@ -40,9 +40,6 @@ void drawMenu() {
 		return;
 	}
 	ImDrawList *drawList = ImGui::GetForegroundDrawList();
-	const char * fps = u8"Ö¡ÂÊ: %.1f\0";
-	sprintf(renderBuff, fps, ImGui::GetIO().Framerate);
-	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), renderBuff);
 	int menuTop = (gameRect.bottom + 150) / 2;
 	int menuIndex = 0;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },
