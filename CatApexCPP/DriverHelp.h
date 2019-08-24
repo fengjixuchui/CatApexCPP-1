@@ -1,6 +1,6 @@
 #include <windows.h>
 
-bool loadDrv(LPCSTR drvFile);
+bool LoadDrv(LPCSTR drvFile);
 HANDLE Debug_OpenProcess(HANDLE ProcessID, ULONG Access);
 HANDLE Debug_OpenThread(HANDLE ThreadID, ULONG Access);
 DWORD64 getBaseModule(HANDLE proc);

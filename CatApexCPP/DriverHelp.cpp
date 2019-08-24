@@ -1,7 +1,7 @@
 #include "DriverHelp.h"
 
 
-#define DEVICE_NAME			"\\\\?\\CatDriver64"
+#define DEVICE_NAME			"\\\\?\\KDSEVDNPSHON"
 	
 DWORD IOCTL_IO_MODULE = 0;
 DWORD IOCTL_IO_READ = 0;
@@ -45,7 +45,7 @@ bool connectDrv()
 	return true;
 }
 
-bool loadDrv(LPCSTR drvFile)
+bool LoadDrv(LPCSTR drvFile)
 {
 	IOCTL_IO_MODULE = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1000, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
 	IOCTL_IO_READ = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1001, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
@@ -61,26 +61,27 @@ bool loadDrv(LPCSTR drvFile)
 		return true;
 	}
 
-	SC_HANDLE hSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
+	SC_HANDLE hSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
 	if (hSCManager == NULL)
 	{
 		return false;
 	}
-	SC_HANDLE hService = OpenServiceA(hSCManager, Service_NAME, SC_MANAGER_QUERY_LOCK_STATUS);
-	if (hService == NULL)
+
+	char ServiceName[10] = { 0 };
+	ServiceName[0] = 'Z';
+	for (int i = 1; i < 9; ++i) ServiceName[i] = 'A' + rand() % 26;
+
+	SC_HANDLE hService = CreateServiceA(hSCManager, ServiceName, ServiceName, SC_MANAGER_ALL_ACCESS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_IGNORE, drvFile, NULL, NULL, NULL, NULL, NULL);
+	if (hService)
 	{
-		hService = CreateServiceA(hSCManager, Service_NAME, Service_NAME, SC_MANAGER_QUERY_LOCK_STATUS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_IGNORE, drvFile, NULL, NULL, NULL, NULL, NULL);
-		if (hService == NULL)
-		{
-			CloseServiceHandle(hSCManager);
-			return false;
-		}
+		StartServiceA(hService, 0, NULL);
+		DeleteService(hService);
+		CloseServiceHandle(hService);
 	}
-	StartServiceA(hService, 0, NULL);
-	CloseServiceHandle(hService);
 	CloseServiceHandle(hSCManager);
 	return connectDrv();
 }
+
 
 HANDLE Debug_OpenProcess(HANDLE ProcessID, ULONG Access)
 {

@@ -32,8 +32,8 @@ int main() {
 	initColor();
 	initConfig();
 	initMenu();
-	const char *mySys = "C:\\catdrv.sys";
-	bool hDriver = loadDrv(mySys);
+	const char *mySys = "D:\\rw.sys";
+	bool hDriver = LoadDrv(mySys);
 	printf("%s\n", mySys);
 	if (!hDriver) {
 		MessageBoxA(nullptr, "安装驱动服务失败, 请检查杀毒软件是否拦截或重复开启", nullptr, 0);
