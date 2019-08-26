@@ -161,7 +161,6 @@ extern int »ªÉ­[3][16];
 
 DWORD GetProcessIDByName(const char *pName);
 void rand_str(char *str, const int len);
-wchar_t* char2wchar_t(char* cstr);
 void initColor();
 void initConfig();
 void initMenu();

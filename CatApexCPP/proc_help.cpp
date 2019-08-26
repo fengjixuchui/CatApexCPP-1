@@ -195,14 +195,6 @@ void rand_str(char *str, const int len)
 	str[++i] = '\0';
 }
 
-wchar_t* char2wchar_t(char* cstr) {
-	int len = MultiByteToWideChar(CP_ACP, 0, cstr, strlen(cstr), NULL, 0);
-	wchar_t * wstr = new wchar_t[len + 1];
-	MultiByteToWideChar(CP_ACP, 0, cstr, strlen(cstr), wstr, len);
-	wstr[len] = '\0';
-	return wstr;
-}
-
 void usleep(unsigned int usec)
 {
 	HANDLE timer;

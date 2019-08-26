@@ -23,7 +23,6 @@ char * renderBuff = 0;
 __int64 tempAim = 0;
 
 void draw() {
-	Sleep(6);
 	if (!playerDataInit)
 	{
 		playerData = (char *)malloc(m_bleedoutState + 8);

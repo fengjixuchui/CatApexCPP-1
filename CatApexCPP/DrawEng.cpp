@@ -37,12 +37,12 @@ void startDraw() {
 	rand_str(clsName, clsLen - 1);
 	rand_str(wndName, wndLen - 1);
 
-	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_HREDRAW, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-					 char2wchar_t(clsName), NULL };
-	::RegisterClassEx(&wc);
-	myHWND = ::CreateWindowEx(WS_EX_TOPMOST,
+	WNDCLASSEXA wc = { sizeof(WNDCLASSEX), CS_HREDRAW, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
+					 clsName, NULL };
+	RegisterClassExA(&wc);
+	myHWND = CreateWindowExA(WS_EX_TOPMOST,
 		wc.lpszClassName,
-		char2wchar_t(wndName),
+		wndName,
 		WS_POPUP,
 		gamePoint.x,
 		gamePoint.y,
@@ -52,14 +52,14 @@ void startDraw() {
 		NULL,
 		GetModuleHandle(NULL),
 		NULL);
-	::ShowWindow(myHWND, SW_SHOWDEFAULT);
-	::UpdateWindow(myHWND);
+	ShowWindow(myHWND, SW_SHOWDEFAULT);
+	UpdateWindow(myHWND);
 	SetWindowLongA(myHWND, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST);
 	MARGINS marg = { -1 };
 	DwmExtendFrameIntoClientArea(myHWND, &marg);
 	if (!CreateDeviceD3D(myHWND)) {
 		CleanupDeviceD3D();
-		::UnregisterClass(wc.lpszClassName, wc.hInstance);
+		UnregisterClassA(wc.lpszClassName, wc.hInstance);
 		return;
 	}
 	ImGui::CreateContext();
@@ -88,15 +88,15 @@ void startDraw() {
 		ImGui::Render();
 		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, &_0f);
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		g_pSwapChain->Present(0, 0);
+		g_pSwapChain->Present(1, 0);
 	}
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
 	CleanupDeviceD3D();
-	::DestroyWindow(myHWND);
-	::UnregisterClass(wc.lpszClassName, wc.hInstance);
+	DestroyWindow(myHWND);
+	UnregisterClassA(wc.lpszClassName, wc.hInstance);
 	return;
 }
 
@@ -165,9 +165,6 @@ void CleanupRenderTarget() {
 		g_mainRenderTargetView = NULL;
 	}
 }
-
-// Win32 message handler
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return ::DefWindowProc(hWnd, msg, wParam, lParam);

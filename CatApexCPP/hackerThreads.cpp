@@ -249,7 +249,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		GetBoneArray(aimEntity, &matrix);
 		Vec3D headLocal = CalcBonePos(matrix, Bones::head, entityLocal);
 		Vec3D neckLocal = CalcBonePos(matrix, Bones::neck, entityLocal);
-		Vec3D calcLocal = { (headLocal.x - neckLocal.x) / 3.2f, (headLocal.y - neckLocal.y) / 3.2f, (headLocal.z - neckLocal.z) / 3.2f };
+		Vec3D calcLocal = { (headLocal.x - neckLocal.x) / 3.2f, (headLocal.y - neckLocal.y) / 3.5f, (headLocal.z - neckLocal.z) / 3.5f };
 		Vec3D aimLocal = { headLocal.x - calcLocal.x, headLocal.y - calcLocal.y, headLocal.z - calcLocal.z };
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *)&aimPlayerData[m_vecVelocity];
@@ -261,12 +261,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 75;
+			float js = distance * 0.01905f / 88;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
 			aimLocal.z += ((VectorVec3D.z * flTime) * js);
-			aimLocal.z += 680.f * bullet_gv * (flTime * flTime);
+			aimLocal.z += 690.f * bullet_gv * (flTime * flTime);
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
