@@ -13,7 +13,8 @@
 
 using namespace std;
 
-HANDLE gamePid;
+DWORD64 gameHandle;
+HANDLE gamePID;
 __int64 hGameModule;
 int fontSize;
 HWND hGameWind;
@@ -48,16 +49,25 @@ int main() {
 		hGameWind = FindWindowA("Respawn001", "Apex Legends");
 		Sleep(100);
 	}
-	gamePid = (HANDLE)GetProcessIDByName("r5apex.exe");
-	if (!gamePid) {
+	gamePID = (HANDLE)GetProcessIDByName("r5apex.exe");
+	if (!gamePID) {
 		MessageBoxA(nullptr, "进程ID获取错误，请检查您的进程名是否为r5apex.exe", nullptr, 0);
 		return -1;
 	}
-	printf("进程ID: %p\n", gamePid);
+	printf("进程ID: %p\n", gamePID);
 	//hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
 	//printf("打开进程 HANDLE: %d\n", hGameProcess);
-	hGameModule = getBaseModule((HANDLE)gamePid);
+	gameHandle = 0;
+	LookupOpenProcess(gamePID, &gameHandle);
+	hGameModule = getBaseModule(gameHandle);
+	printf("内核进程句柄指针: %I64x\n", gameHandle);
+	if (gameHandle == 0)
+	{
+		printf("LOOKUP失败\n");
+		exit(0);
+	}
 	printf("模块地址: %I64x\n", hGameModule);
+	
 	//unloadDrv();
 	//printf("卸载驱动\n", hGameModule);
 	ShowWindow(hGameWind, 9);

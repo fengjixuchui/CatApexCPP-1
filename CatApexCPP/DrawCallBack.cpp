@@ -15,7 +15,7 @@ using namespace std;
 float losDistance = 0;
 std::vector<ApexEntity> insidePlayer;
 std::vector<ImVec2> itemLocals;
-char * playerData = 0;
+char * entityData = 0;
 
 char * pNameBuff = 0;
 bool playerDataInit = false;
@@ -25,7 +25,7 @@ __int64 tempAim = 0;
 void draw() {
 	if (!playerDataInit)
 	{
-		playerData = (char *)malloc(m_bleedoutState + 8);
+		entityData = (char *)malloc(m_bleedoutState + 8);
 		renderBuff = (char *)malloc(512);
 		pNameBuff = (char *)malloc(512);
 		playerDataInit = true;
@@ -112,13 +112,13 @@ void drawEntity() {
 	int _50Players = 0;
 	if (aimEntity > 0)
 	{
-		readMem((HANDLE)gamePid, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
+		readMem(gameHandle, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
 	}
 	//
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;
-		Vec3D entityLocal = {};
-		readVec3D(entity.point + m_location, &entityLocal);
+		readMem(gameHandle, entity.point, m_bleedoutState + 8, entityData);
+		Vec3D entityLocal = *(Vec3D *)&entityData[m_location];
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +
 			worldArray[3][3];
@@ -185,10 +185,9 @@ void drawEntity() {
 			{
 				playerColor = ImColor({ 0x00, 0xff, 0xff });
 			}
-			readMem((HANDLE)gamePid, entity.point, m_bleedoutState + 8, playerData);
-			int blood = *(int*)& playerData[m_iHealth];
-			int armor = *(int*)& playerData[m_shieldHealthMax - 4];
-			int status = *(int*)& playerData[m_bleedoutState];
+			int blood = *(int*)& entityData[m_iHealth];
+			int armor = *(int*)& entityData[m_shieldHealthMax - 4];
+			int status = *(int*)& entityData[m_bleedoutState];
 			if (blood <= 0 || blood > 100 || (blood == 50 && armor == 0)) continue;
 			if (status != 0) {
 				playerColor = ImColor({ 0x90, 0x00, 0x255 });

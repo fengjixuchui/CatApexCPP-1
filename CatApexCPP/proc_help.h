@@ -105,7 +105,8 @@ typedef struct __Point_INDEX {
 } Point_Index;
 
 extern HWND myHWND;
-extern HANDLE gamePid;
+extern DWORD64 gameHandle;
+extern HANDLE gamePID;
 extern HWND hGameWind;
 extern __int64 hGameModule;
 extern int fontSize;

@@ -31,6 +31,91 @@ int windowW;
 int windowH;
 POINT CentWindow;
 
+void Print_Memory(const unsigned char* start, unsigned int length)
+{
+	//create row, col, and i.  Set i to 0
+
+	int row, col, i = 0;
+
+	//iterate through the rows, which will be 16 bytes of memory wide
+	for (row = 0; (i + 1) < length; row++)
+	{
+		//print hex representation
+		for (col = 0; col < 16; col++)
+		{
+			//calculate the current index
+
+			i = row * 16 + col;
+
+			//divides a row of 16 into two columns of 8
+			if (col == 8)
+			{
+				printf(" ");
+			}
+
+			//print the hex value if the current index is in range.
+
+			if (i < length)
+			{
+				printf("%02X", start[i]);
+			}
+			//print a blank if the current index is past the end
+			else
+
+			{
+				printf("  ");
+			}
+
+			//print a space to keep the values separate
+			printf(" ");
+		}
+
+		//create a vertial seperator between hex and ascii representations
+
+		printf(" ");
+
+		//print ascii representation
+		for (col = 0; col < 16; col++)
+		{
+			//calculate the current index
+			i = row * 16 + col;
+
+			//divides a row of 16 into two coumns of 8
+
+			if (col == 8)
+			{
+				printf("  ");
+			}
+
+			//print the value if it is in range
+			if (i < length)
+			{
+
+				//print the ascii value if applicable
+				if (start[i] > 0x20 && start[i] < 0x7F)  //A-Z
+				{
+					printf("%c", start[i]);
+				}
+				//print a period if the value is not printable
+
+				else
+				{
+					printf(".");
+				}
+			}
+			//nothing else to print, so break out of this for loop
+			else
+
+			{
+				break;
+			}
+		}
+
+		//create a new row
+		printf("\n");
+	}
+}
+
 
 DWORD WINAPI InfoThread(LPVOID lpParam) {
 	int a = false;
@@ -54,11 +139,14 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		CentWindow.x = windowW / 2;
 		CentWindow.y = windowH / 2;
 
-		readMem((HANDLE)gamePid, hGameModule + ViewRender, 8, &TempPoint);
-		readMem((HANDLE)gamePid, TempPoint + m_renderArray, 8, &ArrayPoint);
-		readMem((HANDLE)gamePid, hGameModule + CLocalEntity, 8, &MySelfPoint);
-		readMem((HANDLE)gamePid, MySelfPoint + m_iTeamNum, 4, &MyTeam);
+		readMem(gameHandle, hGameModule + ViewRender, 8, &TempPoint);
+		readMem(gameHandle, TempPoint + m_renderArray, 8, &ArrayPoint);
+		readMem(gameHandle, hGameModule + CLocalEntity, 8, &MySelfPoint);
+		readMem(gameHandle, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
+		char* arrayData = (char*) malloc(64);
+		ZeroMemory(arrayData, 64);
+		free(arrayData);
 		Sleep(1000);
 	}
 	return 0;
@@ -81,17 +169,17 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	while (!a) {
 		Sleep(300);
 		vector<ApexEntity> tempEntityList;
-		readMem((HANDLE)gamePid, EntityListPoint, len, EntityListMem);
+		readMem(gameHandle, EntityListPoint, len, EntityListMem);
 		Vec3D myLocal = {};
 		readVec3D(MySelfPoint + m_location, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
 			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
-			readMem((HANDLE)gamePid, cuPoint, 0x10240, EntityMemCached);
+			readMem(gameHandle, cuPoint, 0x10240, EntityMemCached);
 			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
 			if (apexNamePoint < 1000000) continue;
-			readMem((HANDLE)gamePid, apexNamePoint, 32, apexName);
+			readMem(gameHandle, apexNamePoint, 32, apexName);
 			if (!memcmp(apexName, "prop_survival", 14)) {
 				if (!appConfigs.WuPingTouShi) continue;
 				int flag = *(int *)&EntityMemCached[m_customScriptInt];
@@ -131,7 +219,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				weaponEntityid = *(int *)&EntityMemCached[m_latestPrimaryWeapons + m_allWeapons];
 				weaponEntityid &= 0xFFFF;
 				if (weaponEntityid > 0 && weaponEntityid < 65535) {
-					readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+					readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 				}
 				GetEntityTypeStr(weaponEntityPoint, entityInfoNameStr);
 				if (!memcmp("mdl/weapons/", entityInfoNameStr, 12) || !memcmp("mdl/Weapons/", entityInfoNameStr, 12))
@@ -231,19 +319,19 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimThreadStop = true;
 			SuspendThread(hAimThread);
 		}
-		readMem(gamePid, MySelfPoint, m_vecAimPunch + 160, mySelfData);
+		readMem(gameHandle, MySelfPoint, m_vecAimPunch + 160, mySelfData);
 		weaponEntityid = *(int*)& mySelfData[m_latestPrimaryWeapons + m_allWeapons];
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
-			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+			readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
-		readMem(gamePid, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
+		readMem(gameHandle, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
 		bulletSpeed = *(float*)& weaponData[m_flBulletSpeed];
 		if (bulletSpeed == 0) {
 			bulletSpeed = 15000;
 		}
 		bullet_gv = *(float*)& weaponData[m_flBulletSpeed + 8];
-		readMem(gamePid, aimEntity, m_vecVelocity + 160, aimPlayerData);
+		readMem(gameHandle, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		Vec3D entityLocal = *(Vec3D *)&aimPlayerData[m_location];
 		float matrix[128][3][4];
 		GetBoneArray(aimEntity, &matrix);
@@ -291,14 +379,14 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	{
 		int weaponEntityid = 0;
 		__int64 weaponEntityPoint = 0;
-		readMem(gamePid, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		readMem(gameHandle, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
-			readMem((HANDLE)gamePid, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+			readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
 		float w = 0.f;
-		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
-		writeMem(gamePid, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
+		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
+		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
 		//printf("WEAPON: %I64X\n", weaponEntityPoint);
 		Sleep(1);
 	}
