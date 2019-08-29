@@ -204,7 +204,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			else if (!memcmp(apexName, "player", 7))
 			{
 				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
-				if (local.x == 0 || local.y == 0 || local.z == 0 || (int)local.z == 23440) continue;
 				int team = *(int *)&EntityMemCached[m_iTeamNum];
 				if (team == MyTeam) continue;
 				if (cuPoint == MySelfPoint) continue;
@@ -292,7 +291,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				}
 				ApexEntity entity = { cuPoint, 3, flag, NULL, (char *)"", ImColor(255, 255, 0), 0, distance, {} };
 				tempEntityList.emplace_back(entity);
-				GetEntityType(cuPoint);
 				continue;
 			}
 		}
@@ -336,9 +334,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float matrix[128][3][4];
 		GetBoneArray(aimEntity, &matrix);
 		Vec3D headLocal = CalcBonePos(matrix, Bones::head, entityLocal);
-		Vec3D neckLocal = CalcBonePos(matrix, Bones::neck, entityLocal);
-		Vec3D calcLocal = { (headLocal.x - neckLocal.x) / 3.2f, (headLocal.y - neckLocal.y) / 3.5f, (headLocal.z - neckLocal.z) / 3.5f };
-		Vec3D aimLocal = { headLocal.x - calcLocal.x, headLocal.y - calcLocal.y, headLocal.z - calcLocal.z };
+		Vec3D aimLocal = headLocal;
 		Vec3D myLocal = {};
 		Vec3D VectorVec3D = *(Vec3D *)&aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
@@ -349,12 +345,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		if (bulletSpeed > 10 && distance  * 0.01905f > 25) {
-			float js = distance * 0.01905f / 88;
+			float js = distance * 0.01905f / 95;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js);
-			aimLocal.z += 690.f * bullet_gv * (flTime * flTime);
+			aimLocal.z += ((VectorVec3D.z * flTime) * js * 0.80f);
+			aimLocal.z += 685.f * bullet_gv * (flTime * flTime);
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;

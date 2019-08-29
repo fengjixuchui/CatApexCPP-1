@@ -133,50 +133,49 @@ int GetEntityType(__int64 entityPoint) {
 		entityInfoName = (char *)malloc(80);
 	}
 	readMem(gameHandle, entityInfos, 80, entityInfoName);
-	string infoName = string(entityInfoName, 80);
-	if (infoName.find("bloodhound", 0) != string::npos)
+	if (strstr(entityInfoName, "bloodhound"))
 	{
 		return 0; // 寻血
 	}
-	else if (infoName.find("gibraltar", 0) != string::npos)
+	else if (strstr(entityInfoName, "gibraltar"))
 	{
 		return 1; // 直布
 	}
-	else if (infoName.find("support", 0) != string::npos)
+	else if (strstr(entityInfoName, "support"))
 	{
 		return 2; // 命脉
 	}
-	else if (infoName.find("pathfinder", 0) != string::npos)
+	else if (strstr(entityInfoName, "pathfinder"))
 	{
 		return 3; // 探路
 	}
-	else if (infoName.find("stim", 0) != string::npos)
+	else if (strstr(entityInfoName, "stim"))
 	{
 		return 4; // 动力
 	}
-	else if (infoName.find("wraith", 0) != string::npos)
+	else if (strstr(entityInfoName, "wraith"))
 	{
 		return 5; // 恶灵
 	}
-	else if (infoName.find("bangalore", 0) != string::npos)
+	else if (strstr(entityInfoName, "bangalore"))
 	{
 		return 6; // 班加
 	}
-	else if (infoName.find("caustic", 0) != string::npos)
+	else if (strstr(entityInfoName, "caustic"))
 	{
 		return 7; //侵蚀
 	}
-	else if (infoName.find("holo", 0) != string::npos)
+	else if (strstr(entityInfoName, "holo"))
 	{
 		return 8; // 幻象
 	}
-	else if (infoName.find("wattson", 0) != string::npos)
+	else if (strstr(entityInfoName, "wattson"))
 	{
 		return 9; // 华森
 	}
 	else
 	{
-		if (!infoName.empty() && entityInfoName[0] != 0)
+		if (entityInfoName[0] != 0)
 		{
 			printf("%s\n", entityInfoName);
 		}

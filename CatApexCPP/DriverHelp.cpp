@@ -76,11 +76,7 @@ bool LoadDrv(LPCSTR drvFile)
 		return false;
 	}
 
-	char ServiceName[10] = { 0 };
-	ServiceName[0] = 'Z';
-	rand_str(ServiceName + 1, 9);
-
-	SC_HANDLE hService = CreateServiceA(hSCManager, ServiceName, ServiceName, SC_MANAGER_ALL_ACCESS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_IGNORE, drvFile, NULL, NULL, NULL, NULL, NULL);
+	SC_HANDLE hService = CreateServiceA(hSCManager, Service_NAME, Service_NAME, SC_MANAGER_ALL_ACCESS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_IGNORE, drvFile, NULL, NULL, NULL, NULL, NULL);
 	if (hService)
 	{
 		StartServiceA(hService, 0, NULL);

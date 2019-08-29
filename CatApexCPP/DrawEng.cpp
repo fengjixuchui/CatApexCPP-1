@@ -36,6 +36,7 @@ void startDraw() {
 	memset(wndName, 0, wndLen);
 	rand_str(clsName, clsLen - 1);
 	rand_str(wndName, wndLen - 1);
+	printf("clsName: %s\nwndName: %s\n", clsName, wndName);
 
 	WNDCLASSEXA wc = { sizeof(WNDCLASSEX), CS_HREDRAW, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
 					 clsName, NULL };
@@ -44,10 +45,10 @@ void startDraw() {
 		wc.lpszClassName,
 		wndName,
 		WS_POPUP,
-		gamePoint.x,
-		gamePoint.y,
-		gameRect.right,
-		gameRect.bottom,
+		0,
+		0,
+		1920,
+		1080,
 		NULL,
 		NULL,
 		GetModuleHandle(NULL),

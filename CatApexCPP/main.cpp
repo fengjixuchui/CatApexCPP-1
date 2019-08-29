@@ -28,7 +28,7 @@ int main() {
 	printf("BOOT TIME: %lld\n", ((boot_time.time_since_epoch().count() / 10000000) / 60) * 60);
 	Service_NAME = (char *)malloc(50);
 	memset(Service_NAME, 0, 50);
-	sprintf(Service_NAME, "CAT%lld", ((boot_time.time_since_epoch().count() / 10000000) / 60) * 60);
+	sprintf(Service_NAME, "Z%lld", ((boot_time.time_since_epoch().count() / 10000000) / 60) * 60);
 	printf("Service Name: %s\n", Service_NAME);
 	initColor();
 	initConfig();

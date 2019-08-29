@@ -104,6 +104,14 @@ typedef struct __Point_INDEX {
 	int index;
 } Point_Index;
 
+typedef struct __AimEntityDrawData {
+	float BoxX;
+	float BoxY;
+	float BoxY1;
+	ImColor color;
+	char * text;
+} AimEntityDrawData;
+
 extern HWND myHWND;
 extern DWORD64 gameHandle;
 extern HANDLE gamePID;

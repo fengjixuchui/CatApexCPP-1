@@ -21,6 +21,7 @@ char * pNameBuff = 0;
 bool playerDataInit = false;
 char * renderBuff = 0;
 __int64 tempAim = 0;
+char * aimBuff = 0;
 
 void draw() {
 	if (!playerDataInit)
@@ -28,6 +29,7 @@ void draw() {
 		entityData = (char *)malloc(m_bleedoutState + 8);
 		renderBuff = (char *)malloc(512);
 		pNameBuff = (char *)malloc(512);
+		aimBuff = (char *)malloc(512);
 		playerDataInit = true;
 	}
 	drawMenu();
@@ -39,6 +41,9 @@ void drawMenu() {
 		return;
 	}
 	ImDrawList *drawList = ImGui::GetForegroundDrawList();
+	const char * fps = u8"每帧耗时: %.1f ms / 帧率: %.1f\0";
+	sprintf(renderBuff, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), renderBuff);
 	int menuTop = (gameRect.bottom + 150) / 2;
 	int menuIndex = 0;
 	drawStrockText(drawList, font, myFontSize, { 10, (float)menuTop }, { 0, 255, 255 },
@@ -114,6 +119,7 @@ void drawEntity() {
 	{
 		readMem(gameHandle, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
 	}
+	AimEntityDrawData aimDraw = {0, 0};
 	//
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;
@@ -204,17 +210,18 @@ void drawEntity() {
 
 				if (entity.point == aimEntity) {
 					readPlayerName(entity.zc, pNameBuff);
-					sprintf(renderBuff, fName, entity.distance, armor, blood, pNameBuff, entity.WeaponName);
+					sprintf(aimBuff, fName, entity.distance, armor, blood, pNameBuff, entity.WeaponName);
+					aimDraw = { BoxX, BoxY, BoxY1, playerColor, aimBuff };
 				}
 				else
 				{
 					sprintf(renderBuff, fNormal, entity.distance, armor, blood, entity.WeaponName);
+					drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
+						playerColor, renderBuff);
+					drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.f,
+						playerColor);
 				}
 
-				drawStrockText(drawList, font, myFontSize, { (BoxX - (BoxY1 - BoxY) / 4) + (BoxY1 - BoxY) / 2, BoxY },
-					playerColor, renderBuff);
-				drawFrame(drawList, { BoxX - (BoxY1 - BoxY) / 4, BoxY, (BoxY1 - BoxY) / 2, BoxY1 - BoxY }, 2.f,
-					playerColor);
 				ImVec2 tmpPiont;
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
@@ -232,7 +239,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 20) {
+				if (entity.distance < 25) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {
@@ -293,8 +300,16 @@ void drawEntity() {
 			drawStrockText(drawList, font, myFontSize, { BoxX, BoxY }, entity.color, renderBuff);
 		}
 	}
+	if (aimDraw.BoxY1)
+	{
+		drawStrockText(drawList, font, myFontSize, { (aimDraw.BoxX - (aimDraw.BoxY1 - aimDraw.BoxY) / 4) + (aimDraw.BoxY1 - aimDraw.BoxY) / 2, aimDraw.BoxY },
+			aimDraw.color, aimDraw.text);
+		drawFrame(drawList, { aimDraw.BoxX - (aimDraw.BoxY1 - aimDraw.BoxY) / 4, aimDraw.BoxY, (aimDraw.BoxY1 - aimDraw.BoxY) / 2, aimDraw.BoxY1 - aimDraw.BoxY }, 2.f,
+			aimDraw.color);
+	}
+
 	sprintf(renderBuff, u8"50米内未倒地敌人: %d\0", _50Players);
-	drawStrockText(drawList, font, myFontSize, { (float)CentWindow.x - 100, 100.f }, _50Players == 0 ? ImColor{ 0, 255, 0 } : ImColor{ 255, 0, 0 }, renderBuff);
+	drawStrockText(drawList, font, myFontSize, { (float)CentWindow.x - 100, 170.f }, _50Players == 0 ? ImColor{ 0, 255, 0 } : ImColor{ 255, 0, 0 }, renderBuff);
 
 	float losInside = 0;
 	Vec3D myLocal = {};
