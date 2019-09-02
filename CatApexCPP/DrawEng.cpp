@@ -75,8 +75,8 @@ void startDraw() {
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
 	const float _0f = 0.f;
-	ImGui_ImplDX11_NewFrame();
 	g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
+	ImGui_ImplDX11_NewFrame();
 	while (msg.message != WM_QUIT) {
 		if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
 			::TranslateMessage(&msg);
@@ -87,6 +87,7 @@ void startDraw() {
 		ImGui::NewFrame();
 		draw();
 		ImGui::Render();
+		
 		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, &_0f);
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		g_pSwapChain->Present(1, 0);

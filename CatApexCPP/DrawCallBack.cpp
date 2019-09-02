@@ -22,6 +22,7 @@ bool playerDataInit = false;
 char * renderBuff = 0;
 __int64 tempAim = 0;
 char * aimBuff = 0;
+INT64 lastTime = 0;
 
 void draw() {
 	if (!playerDataInit)
@@ -31,6 +32,7 @@ void draw() {
 		pNameBuff = (char *)malloc(512);
 		aimBuff = (char *)malloc(512);
 		playerDataInit = true;
+		QueryPerformanceCounter((LARGE_INTEGER *)&lastTime);
 	}
 	drawMenu();
 	drawEntity();
@@ -40,9 +42,13 @@ void drawMenu() {
 	if (!appConfigs.MenuStatus) {
 		return;
 	}
+	INT64 nowTime = 0;
+	QueryPerformanceCounter((LARGE_INTEGER *)&nowTime);
 	ImDrawList *drawList = ImGui::GetForegroundDrawList();
-	const char * fps = u8"每帧耗时: %.1f ms / 帧率: %.1f\0";
-	sprintf(renderBuff, fps, 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	const char * fps = u8"每帧耗时: %lld ms / 帧率: %.1f\0";
+	INT64 usedTime = (nowTime - lastTime) / 10000;
+	sprintf(renderBuff, fps, usedTime, usedTime == 0 ? 9999.f : (float) (1000.f / usedTime));
+	lastTime = nowTime;
 	drawStrockText(drawList, font, 16, { 20, 20 }, ImColor(0, 255, 0), renderBuff);
 	int menuTop = (gameRect.bottom + 150) / 2;
 	int menuIndex = 0;

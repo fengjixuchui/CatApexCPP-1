@@ -201,38 +201,38 @@ static void ImGui_ImplWin32_UpdateGamepads()
 void    ImGui_ImplWin32_NewFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
-    IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas");
+    IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
     // Setup display size (every frame to accommodate for window resizing)
-	RECT rect;
-	::GetClientRect(g_hWnd, &rect);
+    RECT rect;
+    ::GetClientRect(g_hWnd, &rect);
     io.DisplaySize = ImVec2((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
 
     // Setup time step
-	//INT64 current_time;
-	//::QueryPerformanceCounter((LARGE_INTEGER*)& current_time);
-	//io.DeltaTime = (float)(current_time - g_Time) / g_TicksPerSecond;
-	//g_Time = current_time;
+    //INT64 current_time;
+    //::QueryPerformanceCounter((LARGE_INTEGER *)&current_time);
+    //io.DeltaTime = (float)(current_time - g_Time) / g_TicksPerSecond;
+    //g_Time = current_time;
 
-    // Read keyboard modifiers inputs
+    //// Read keyboard modifiers inputs
     //io.KeyCtrl = (::GetKeyState(VK_CONTROL) & 0x8000) != 0;
     //io.KeyShift = (::GetKeyState(VK_SHIFT) & 0x8000) != 0;
     //io.KeyAlt = (::GetKeyState(VK_MENU) & 0x8000) != 0;
     //io.KeySuper = false;
-    // io.KeysDown[], io.MousePos, io.MouseDown[], io.MouseWheel: filled by the WndProc handler below.
+    //// io.KeysDown[], io.MousePos, io.MouseDown[], io.MouseWheel: filled by the WndProc handler below.
 
-    // Update OS mouse position
+    //// Update OS mouse position
     //ImGui_ImplWin32_UpdateMousePos();
 
-    // Update OS mouse cursor with the cursor requested by imgui
-   // ImGuiMouseCursor mouse_cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+    //// Update OS mouse cursor with the cursor requested by imgui
+    //ImGuiMouseCursor mouse_cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
     //if (g_LastMouseCursor != mouse_cursor)
     //{
-        //g_LastMouseCursor = mouse_cursor;
-        //ImGui_ImplWin32_UpdateMouseCursor();
+    //    g_LastMouseCursor = mouse_cursor;
+    //    ImGui_ImplWin32_UpdateMouseCursor();
     //}
 
-    // Update game controllers (if enabled and available)
+    //// Update game controllers (if enabled and available)
     //ImGui_ImplWin32_UpdateGamepads();
 }
 
