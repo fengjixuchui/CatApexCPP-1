@@ -345,7 +345,8 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
-		float flTime = distance / bulletSpeed;
+		float xyDistance = sqrt(xx * xx + yy * yy);
+		float flTime = xyDistance / bulletSpeed;
 		float viewDistance = distance * 0.01905f;
 		if (bulletSpeed > 10 && viewDistance > 15) {
 			float js = viewDistance / 100;
