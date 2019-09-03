@@ -303,18 +303,26 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 	char * weaponData = (char *)malloc(m_flBulletSpeed + 16);
 	char * aimPlayerData = (char *)malloc(m_vecVelocity + 160);
 	char * mySelfData = (char *)malloc(m_entityBasePunch + 160);
+	Vec3D lastLocal = {0.f, 0.f, 0.f};
+	Vec3D VectorVec3D = { 0.f, 0.f, 0.f };
+	INT64 lastTime = 0;
+
 	while (true) {
 		int weaponEntityid = 0;
 		__int64 weaponEntityPoint = 0;
 		float bulletSpeed = 0;
 		float bullet_gv = 0;
-
+		INT64 nowTime = 0;
 		if (!aim) {
 			aimEntity = 0;
 			aimThreadStop = true;
+			VectorVec3D = { 0.f, 0.f, 0.f };
+			lastLocal = { 0.f, 0.f, 0.f };
+			lastTime = 0;
 			SuspendThread(hAimThread);
 		}
 		readMem(gameHandle, MySelfPoint, m_vecAimPunch + 160, mySelfData);
+		readMem(gameHandle, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		weaponEntityid = *(int*)& mySelfData[m_latestPrimaryWeapons + m_allWeapons];
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
@@ -322,11 +330,10 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		}
 		readMem(gameHandle, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
 		bulletSpeed = *(float*)& weaponData[m_flBulletSpeed];
-		if (bulletSpeed == 0) {
+		if (bulletSpeed < 10) {
 			bulletSpeed = 15000;
 		}
 		bullet_gv = *(float*)& weaponData[m_flBulletSpeed + 8];
-		readMem(gameHandle, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		Vec3D entityLocal = *(Vec3D *)&aimPlayerData[m_location];
 		float matrix[128][3][4];
 		GetBoneArray(aimEntity, &matrix);
@@ -334,8 +341,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D neckLocal = CalcBonePos(matrix, Bones::neck, entityLocal);
 		Vec3D calcLocal = { (headLocal.x - neckLocal.x) * 0.37f, (headLocal.y - neckLocal.y) * 0.37f, (headLocal.z - neckLocal.z) * 0.37f };
 		Vec3D aimLocal = { headLocal.x - calcLocal.x, headLocal.y - calcLocal.y, headLocal.z - calcLocal.z };
+		if (lastLocal.x == 0.f)
+		{
+			lastLocal = aimLocal;
+		}
 		Vec3D myLocal = {};
-		Vec3D VectorVec3D = *(Vec3D *)&aimPlayerData[m_vecVelocity];
 		if (aimLocal.x == 0 || aimLocal.y == 0 || aimLocal.z == 0) continue;
 		readVec3D(MouseAddr - 28, &myLocal);
 		float xx = aimLocal.x - myLocal.x;
@@ -343,25 +353,31 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
+		QueryPerformanceCounter((LARGE_INTEGER *)&nowTime);
+		float flT1 = (flTime * 1000) / 2;
+		INT64 timeSub = nowTime - lastTime;
+		if (timeSub / 10000 >= flT1)
+		{
+			lastTime = nowTime;
+			VectorVec3D = { (aimLocal.x - lastLocal.x) * 2, (aimLocal.y - lastLocal.y ) * 2, (aimLocal.z - lastLocal.z) * 2 };
+			lastLocal = aimLocal;
+		}
 		float viewDistance = distance * 0.01905f;
-		if (bulletSpeed > 10 && viewDistance > 15) {
+		if (viewDistance > 15) {
 			float js = viewDistance / 105;
 			if (js > 1.f) js = 1.f;
-			aimLocal.x += ((VectorVec3D.x * flTime) * js);
-			aimLocal.y += ((VectorVec3D.y * flTime) * js);
-			aimLocal.z += ((VectorVec3D.z * flTime) * js);
+			aimLocal.x += VectorVec3D.x;
+			aimLocal.y += VectorVec3D.y;
+			aimLocal.z += VectorVec3D.z;
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
 		float lf = atan2f(yy, xx) * rotation;
 		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
-		if (bulletSpeed > 10)
-		{
-			float BaseFaill = 680.f * bullet_gv * (flTime * flTime);
-			zz += BaseFaill * ((90 - abs(tb)) / 90 );
-			tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
-		}
+		float BaseFaill = 720.f * bullet_gv * (flTime * flTime);
+		zz += BaseFaill * ((90 - abs(tb)) / 90 );
+		tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
 		Vec3D angle = { tb, lf, 0.f };
 		Vec3D punch = *(Vec3D *)&mySelfData[m_vecAimPunch];
@@ -371,20 +387,8 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		Vec3D cuAng = {};
 		readVec3D(MouseAddr, &cuAng);
 		angle.z = cuAng.z;
-		//float x1 = (cuAng.x - angle.x) / 2;
-		//float y1 = (cuAng.y - angle.y) / 2;
-
-		//for (size_t i = 0; i < 1; i++)
-		//{
-		//	readVec3D(MouseAddr, &cuAng);
-		//	cuAng.x -= x1;
-		//	cuAng.y -= y1;
-		//	writeVec3D(MouseAddr, &cuAng);
-		//	usleep(2);
-		//}
-
 		writeVec3D(MouseAddr, &angle);
-		usleep(1);
+		usleep(100);
 	}
 	return 0;
 }
@@ -402,7 +406,9 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 		float w = 0.f;
 		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
 		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
-		//printf("WEAPON: %I64X\n", weaponEntityPoint);
+		//float bulletSpeed = 0;
+		//readMem(gameHandle, weaponEntityPoint + m_flBulletSpeed, sizeof(float), &bulletSpeed);
+		//printf("SPEED: %f\n", bulletSpeed);
 		usleep(100);
 	}
 	return 0;
