@@ -144,9 +144,6 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		readMem(gameHandle, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem(gameHandle, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
-		char* arrayData = (char*) malloc(64);
-		ZeroMemory(arrayData, 64);
-		free(arrayData);
 		Sleep(1000);
 	}
 	return 0;
@@ -345,23 +342,26 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float yy = aimLocal.y - myLocal.y;
 		float zz = aimLocal.z - myLocal.z;
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
-		float xyDistance = sqrt(xx * xx + yy * yy);
-		float flTime = xyDistance / bulletSpeed;
+		float flTime = distance / bulletSpeed;
 		float viewDistance = distance * 0.01905f;
 		if (bulletSpeed > 10 && viewDistance > 15) {
-			float js = viewDistance / 100;
+			float js = viewDistance / 105;
 			if (js > 1.f) js = 1.f;
 			aimLocal.x += ((VectorVec3D.x * flTime) * js);
 			aimLocal.y += ((VectorVec3D.y * flTime) * js);
 			aimLocal.z += ((VectorVec3D.z * flTime) * js);
-			aimLocal.z += 703.f * bullet_gv * (flTime * flTime);
 		}
 		xx = aimLocal.x - myLocal.x;
 		yy = aimLocal.y - myLocal.y;
 		zz = aimLocal.z - myLocal.z;
 		float lf = atan2f(yy, xx) * rotation;
 		float tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
-
+		if (bulletSpeed > 10)
+		{
+			float BaseFaill = 680.f * bullet_gv * (flTime * flTime);
+			zz += BaseFaill * ((90 - abs(tb)) / 90 );
+			tb = 0 - ((atan2f(zz, sqrt(xx * xx + yy * yy))) * rotation);
+		}
 		if (!(lf >= 0 || lf <= 0) || !(tb >= 0 || tb <= 0)) continue;
 		Vec3D angle = { tb, lf, 0.f };
 		Vec3D punch = *(Vec3D *)&mySelfData[m_vecAimPunch];
