@@ -31,91 +31,6 @@ int windowW;
 int windowH;
 POINT CentWindow;
 
-void Print_Memory(const unsigned char* start, unsigned int length)
-{
-	//create row, col, and i.  Set i to 0
-
-	int row, col, i = 0;
-
-	//iterate through the rows, which will be 16 bytes of memory wide
-	for (row = 0; (i + 1) < length; row++)
-	{
-		//print hex representation
-		for (col = 0; col < 16; col++)
-		{
-			//calculate the current index
-
-			i = row * 16 + col;
-
-			//divides a row of 16 into two columns of 8
-			if (col == 8)
-			{
-				printf(" ");
-			}
-
-			//print the hex value if the current index is in range.
-
-			if (i < length)
-			{
-				printf("%02X", start[i]);
-			}
-			//print a blank if the current index is past the end
-			else
-
-			{
-				printf("  ");
-			}
-
-			//print a space to keep the values separate
-			printf(" ");
-		}
-
-		//create a vertial seperator between hex and ascii representations
-
-		printf(" ");
-
-		//print ascii representation
-		for (col = 0; col < 16; col++)
-		{
-			//calculate the current index
-			i = row * 16 + col;
-
-			//divides a row of 16 into two coumns of 8
-
-			if (col == 8)
-			{
-				printf("  ");
-			}
-
-			//print the value if it is in range
-			if (i < length)
-			{
-
-				//print the ascii value if applicable
-				if (start[i] > 0x20 && start[i] < 0x7F)  //A-Z
-				{
-					printf("%c", start[i]);
-				}
-				//print a period if the value is not printable
-
-				else
-				{
-					printf(".");
-				}
-			}
-			//nothing else to print, so break out of this for loop
-			else
-
-			{
-				break;
-			}
-		}
-
-		//create a new row
-		printf("\n");
-	}
-}
-
 
 DWORD WINAPI InfoThread(LPVOID lpParam) {
 	int a = false;
@@ -141,6 +56,7 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 
 		readMem(gameHandle, hGameModule + ViewRender, 8, &TempPoint);
 		readMem(gameHandle, TempPoint + m_renderArray, 8, &ArrayPoint);
+		//ArrayPoint = hGameModule + ViewRender;
 		readMem(gameHandle, hGameModule + CLocalEntity, 8, &MySelfPoint);
 		readMem(gameHandle, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
@@ -177,7 +93,23 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
 			if (apexNamePoint < 1000000) continue;
 			readMem(gameHandle, apexNamePoint, 32, apexName);
-			if (!memcmp(apexName, "prop_survival", 14)) {
+			if (appConfigs.KaiFaZheXuanXiang)
+			{
+				int flag = *(int *)&EntityMemCached[m_customScriptInt];
+				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
+				float xx = local.x - myLocal.x;
+				float yy = local.y - myLocal.y;
+				float zz = local.z - myLocal.z;
+				float distance = sqrt(xx * xx + yy * yy + zz * zz);
+				distance *= 0.01905f;
+				char * qwq = (char *)malloc(80);
+				GetEntityTypeStr(cuPoint, qwq);
+				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, {} };
+				//GetEntityType(cuPoint);
+				tempEntityList.emplace_back(entity);
+				continue;
+			}
+			else if (!memcmp(apexName, "prop_survival", 14)) {
 				if (!appConfigs.WuPingTouShi) continue;
 				int flag = *(int *)&EntityMemCached[m_customScriptInt];
 				ItemInfo item = entityNames[flag];
@@ -193,7 +125,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				{
 					item.color = ImColor(rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1, rand() % (255 - 1 + 1) + 1);
 				}
-				ApexEntity entity = { cuPoint, 0, flag, (char *)item.name, (char *)"", item.color, 0, distance, item };
+				ApexEntity entity = { cuPoint, 0, flag, (char *) item.name, (char *)"", item.color, 0, distance, item };
 
 				tempEntityList.emplace_back(entity);
 				continue;
@@ -231,22 +163,6 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 					}
 				}
 				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance, {}, GetWeaponName(weaponModelStr) };
-				tempEntityList.emplace_back(entity);
-				continue;
-			}
-			else if (appConfigs.KaiFaZheXuanXiang)
-			{
-				int flag = *(int *)&EntityMemCached[m_customScriptInt];
-				Vec3D local = *(Vec3D *)&EntityMemCached[m_location];
-				float xx = local.x - myLocal.x;
-				float yy = local.y - myLocal.y;
-				float zz = local.z - myLocal.z;
-				float distance = sqrt(xx * xx + yy * yy + zz * zz);
-				distance *= 0.01905f;
-				char * qwq = (char *)malloc(80);
-				GetEntityTypeStr(cuPoint, qwq);
-				ApexEntity entity = { cuPoint, 0, flag, qwq, (char *)"", ImColor(255, 0, 0), 0, distance, {} };
-				//GetEntityType(cuPoint);
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -354,12 +270,12 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		float distance = sqrt(xx * xx + yy * yy + zz * zz);
 		float flTime = distance / bulletSpeed;
 		QueryPerformanceCounter((LARGE_INTEGER *)&nowTime);
-		float flT1 = (flTime * 1000) / 2;
+		float flT1 = flTime * 1000;
 		INT64 timeSub = nowTime - lastTime;
 		if (timeSub / 10000 >= flT1)
 		{
 			lastTime = nowTime;
-			VectorVec3D = { (aimLocal.x - lastLocal.x) * 2, (aimLocal.y - lastLocal.y ) * 2, (aimLocal.z - lastLocal.z) * 2 };
+			VectorVec3D = { aimLocal.x - lastLocal.x, aimLocal.y - lastLocal.y, aimLocal.z - lastLocal.z };
 			lastLocal = aimLocal;
 		}
 		float viewDistance = distance * 0.01905f;
@@ -385,7 +301,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		angle.x -= punch.x;
 		angle.y -= punch.y;
 		Vec3D cuAng = {};
-		readVec3D(MouseAddr, &cuAng);
+		readVec3D(MouseAddr - m_renderMouse, &cuAng);
 		angle.z = cuAng.z;
 		writeVec3D(MouseAddr, &angle);
 		usleep(100);

@@ -134,6 +134,14 @@ void drawEntity() {
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +
 			worldArray[3][3];
+		if (entity.type == 1)
+		{
+			int status = *(int*)& entityData[m_bleedoutState];
+			if (status == 0 && (int)entity.distance <= 50)
+			{
+				_50Players++;
+			}
+		}
 		if (ViewW < 0.01) continue;
 		ViewW = 1 / ViewW;
 		if (entity.type == 0) {
@@ -204,10 +212,7 @@ void drawEntity() {
 			if (status != 0) {
 				playerColor = ImColor({ 0x90, 0x00, 0x255 });
 			}
-			if (status == 0 && (int)entity.distance <= 50)
-			{
-				_50Players++;
-			}
+			
 			if (appConfigs.FangKuang) {
 
 

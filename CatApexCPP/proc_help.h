@@ -12,19 +12,20 @@
 
 #define rotation					57.295779513082f
 
-#define CEntityList					0x1F01B08//0x1F1AC78
-#define CLocalEntity				0x22B5138//0x22CE368
-#define ViewRender					0xC57AE90//0xC579FF8
+#define CEntityList					0x1f27268//0x1F01B08//0x1F1AC78
+#define CLocalEntity				0x22da978//0x22B5138//0x22CE368
+#define ViewRender					0xcb4a038//0xC57AE90//0xC579FF8
 #define NameList					0xC57BCE0//0xC57AE40
-#define m_location					0x13C
-#define m_mouse						0x21F8//0x21B8
+#define m_location					0x144//0x13C
+#define m_mouse						0x2150//0x21F8//0x21B8
+#define m_renderMouse				0x10
 #define m_renderArray				0x1A93D0
 #define m_nameArrayListSub			0xA40
 #define m_entityBasePunch			0x213c
 
 #define m_iHealth					0x3E0
 #define m_iMaxHealth				0x510//0x500
-#define m_shieldHealthMax			0x164
+#define m_shieldHealthMax			0x16c//0x164
 #define m_iTeamNum					0x3F0
 #define m_lifeState					0x730//0x720
 #define m_bleedoutState				0x23B8//0x2378
@@ -32,18 +33,18 @@
 #define m_helmetType				0x4244//0x4204
 #define m_duckState					0x26A0//0x2660
 #define m_vecVelocity				0x41C//0x418
-#define m_latestPrimaryWeapons		0x1744//0x1704
-#define m_latestNonOffhandWeapons	0x174C//0x170C
-#define m_allWeapons				0x24
+#define m_latestPrimaryWeapons		0x1704//0x1744//0x1704
+#define m_latestNonOffhandWeapons	0x170c//0x174C//0x170C
+#define m_allWeapons				0x2C//????
 #define m_selectedOffhands			0x174E//0x170E
 #define m_iSignifierName			0x518//0x508
-#define m_customScriptInt			0x1348//0x1308
-#define m_vecAimPunch				0x2154//0x2114
-#define m_flBulletSpeed				0x1C6C//0x1C24
-#define m_bone						0xF18//0xED8
-#define m_entityTypeInfo			0x828//0x40
-#define m_flWeaponSpread1			0x13B0
-#define m_flWeaponSpread2			0x13C0
+#define m_customScriptInt			0x1308//0x1348//0x1308
+#define m_vecAimPunch				0x20b4//0x2154//0x2114
+#define m_flBulletSpeed				0x1C3C//0x1C6C//0x1C24
+#define m_bone						0xED8//0xF18//0xED8
+#define m_entityTypeInfo			0x820//0x828//0x40
+#define m_flWeaponSpread1			0x1370//??????
+#define m_flWeaponSpread2			0x1380//??????
 
 typedef struct __ColorStruct {
 	unsigned int ShiShi;
@@ -179,6 +180,7 @@ void initEntityNames();
 void initBones();
 void usleep(unsigned int usec);
 int getRandomInt(int min, int max);
+void Print_Memory(const unsigned char* start, unsigned int length);
 
 
 enum Bones : int {
