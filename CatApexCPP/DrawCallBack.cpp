@@ -123,13 +123,13 @@ void drawEntity() {
 	int _50Players = 0;
 	if (aimEntity > 0)
 	{
-		readMem(gameHandle, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
+		readMem(gamePID, aimEntity + m_bleedoutState, 4, &aimEntityStatus);
 	}
 	AimEntityDrawData aimDraw = {0, 0};
 	//
 	for (ApexEntity entity : apexEntityList) {
 		if (appConfigs.PeiJianTouShi && (entity.flag >= 62 || entity.flag == 38 || entity.flag == 25 || entity.flag == 28)) continue;
-		readMem(gameHandle, entity.point, m_bleedoutState + 8, entityData);
+		readMem(gamePID, entity.point, m_bleedoutState + 8, entityData);
 		Vec3D entityLocal = *(Vec3D *)&entityData[m_location];
 		float ViewW =
 			worldArray[3][0] * entityLocal.x + worldArray[3][1] * entityLocal.y + worldArray[3][2] * entityLocal.z +

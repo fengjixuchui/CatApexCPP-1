@@ -3,10 +3,9 @@
 bool LoadDrv(LPCSTR drvFile);
 HANDLE Debug_OpenProcess(HANDLE ProcessID, ULONG Access);
 HANDLE Debug_OpenThread(HANDLE ThreadID, ULONG Access);
-void LookupOpenProcess(HANDLE pid, PVOID buff);
-DWORD64 getBaseModule(DWORD64 proc);
-void readMem(DWORD64 proc, DWORD64 addr, int size, PVOID data);
-void writeMem(DWORD64 proc, DWORD64 addr, int size, PVOID data);
+DWORD64 getBaseModule(HANDLE proc);
+void readMem(HANDLE proc, DWORD64 addr, int size, PVOID data);
+void writeMem(HANDLE proc, DWORD64 addr, int size, PVOID data);
 void protect();
 void unloadDrv();
 

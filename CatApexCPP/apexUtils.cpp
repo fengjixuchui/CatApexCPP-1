@@ -7,24 +7,24 @@ char * entityInfoName = 0;
 bool infoInit = false;
 
 void readWorldArray(void *array) {
-	readMem(gameHandle, ArrayPoint, 64, array);
+	readMem(gamePID, ArrayPoint, 64, array);
 }
 
 void readVec3D(__int64 addr, Vec3D * vec3D) {
-	readMem(gameHandle, addr, 12, vec3D);
+	readMem(gamePID, addr, 12, vec3D);
 }
 
 void writeVec3D(__int64 addr, Vec3D * vec3D) {
-	writeMem(gameHandle, addr, 12, vec3D);
+	writeMem(gamePID, addr, 12, vec3D);
 }
 
 void readPlayerName(int index, char * buff) {
 	__int64 nameArray = 0;
-	readMem(gameHandle, hGameModule + NameList, sizeof(nameArray), &nameArray);
+	readMem(gamePID, hGameModule + NameList, sizeof(nameArray), &nameArray);
 	nameArray = nameArray + index * 8;
 	__int64 namePoint = 0;
-	readMem(gameHandle, nameArray + m_nameArrayListSub, sizeof(namePoint), &namePoint);
-	readMem(gameHandle, namePoint, 256, buff);
+	readMem(gamePID, nameArray + m_nameArrayListSub, sizeof(namePoint), &namePoint);
+	readMem(gamePID, namePoint, 256, buff);
 }
 
 Vec3D GetBonePos(__int64 entity, int ID, Vec3D entityLocal) {
@@ -46,8 +46,8 @@ Vec3D CalcBonePos(float matrix[128][3][4], int ID, Vec3D entityLocal) {
 void GetBoneArray(__int64 entity, void * arrayBuf) {
 	__int64 pBoneMatrix = 0;
 	float matrix[128][3][4];
-	readMem(gameHandle, entity + m_bone, sizeof(pBoneMatrix), &pBoneMatrix);
-	readMem(gameHandle, pBoneMatrix, sizeof(matrix), arrayBuf);
+	readMem(gamePID, entity + m_bone, sizeof(pBoneMatrix), &pBoneMatrix);
+	readMem(gamePID, pBoneMatrix, sizeof(matrix), arrayBuf);
 }
 
 void Vec3DBoneToScreen(Vec3D local, ImVec2 * point) {
@@ -126,13 +126,13 @@ void DrawBone(ImDrawList * drawList, __int64 entity, Vec3D entityLocal, ImFont *
 
 int GetEntityType(__int64 entityPoint) {
 	__int64 entityInfos = 0;
-	readMem(gameHandle, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
+	readMem(gamePID, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
 	if (!infoInit)
 	{
 		infoInit = true;
 		entityInfoName = (char *)malloc(80);
 	}
-	readMem(gameHandle, entityInfos, 80, entityInfoName);
+	readMem(gamePID, entityInfos, 80, entityInfoName);
 	if (strstr(entityInfoName, "bloodhound"))
 	{
 		return 0; // ѰѪ
@@ -185,8 +185,8 @@ int GetEntityType(__int64 entityPoint) {
 
 void GetEntityTypeStr(__int64 entityPoint, char * entityInfoNameStr) {
 	__int64 entityInfos = 0;
-	readMem(gameHandle, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
-	readMem(gameHandle, entityInfos, 80, entityInfoNameStr);
+	readMem(gamePID, entityPoint + m_entityTypeInfo, sizeof(entityInfos), &entityInfos);
+	readMem(gamePID, entityInfos, 80, entityInfoNameStr);
 }
 
 const char * GetWeaponName(char * mName) {

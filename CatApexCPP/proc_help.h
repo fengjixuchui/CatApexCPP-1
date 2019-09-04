@@ -28,7 +28,7 @@
 #define m_shieldHealthMax			0x16c//0x164
 #define m_iTeamNum					0x3F0
 #define m_lifeState					0x730//0x720
-#define m_bleedoutState				0x23B8//0x2378
+#define m_bleedoutState				0x2310//0x23B8//0x2378
 #define m_armorType					0x4248//0x4208
 #define m_helmetType				0x4244//0x4204
 #define m_duckState					0x26A0//0x2660
@@ -115,7 +115,6 @@ typedef struct __AimEntityDrawData {
 } AimEntityDrawData;
 
 extern HWND myHWND;
-extern DWORD64 gameHandle;
 extern HANDLE gamePID;
 extern HWND hGameWind;
 extern __int64 hGameModule;

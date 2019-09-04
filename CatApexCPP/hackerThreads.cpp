@@ -54,11 +54,11 @@ DWORD WINAPI InfoThread(LPVOID lpParam) {
 		CentWindow.x = windowW / 2;
 		CentWindow.y = windowH / 2;
 
-		readMem(gameHandle, hGameModule + ViewRender, 8, &TempPoint);
-		readMem(gameHandle, TempPoint + m_renderArray, 8, &ArrayPoint);
+		readMem(gamePID, hGameModule + ViewRender, 8, &TempPoint);
+		readMem(gamePID, TempPoint + m_renderArray, 8, &ArrayPoint);
 		//ArrayPoint = hGameModule + ViewRender;
-		readMem(gameHandle, hGameModule + CLocalEntity, 8, &MySelfPoint);
-		readMem(gameHandle, MySelfPoint + m_iTeamNum, 4, &MyTeam);
+		readMem(gamePID, hGameModule + CLocalEntity, 8, &MySelfPoint);
+		readMem(gamePID, MySelfPoint + m_iTeamNum, 4, &MyTeam);
 		MouseAddr = MySelfPoint + m_mouse;
 		Sleep(1000);
 	}
@@ -82,17 +82,17 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 	while (!a) {
 		Sleep(300);
 		vector<ApexEntity> tempEntityList;
-		readMem(gameHandle, EntityListPoint, len, EntityListMem);
+		readMem(gamePID, EntityListPoint, len, EntityListMem);
 		Vec3D myLocal = {};
 		readVec3D(MySelfPoint + m_location, &myLocal);
 		for (int i = 0; i < 65535; ++i) {
 			cuPoint = *(__int64 *)&EntityListMem[i << 5];
 			if (cuPoint < 1000000) continue;
 			__int64 apexNamePoint = 0;
-			readMem(gameHandle, cuPoint, 0x10240, EntityMemCached);
+			readMem(gamePID, cuPoint, 0x10240, EntityMemCached);
 			apexNamePoint = *(__int64 *)&EntityMemCached[m_iSignifierName];
 			if (apexNamePoint < 1000000) continue;
-			readMem(gameHandle, apexNamePoint, 32, apexName);
+			readMem(gamePID, apexNamePoint, 32, apexName);
 			if (appConfigs.KaiFaZheXuanXiang)
 			{
 				int flag = *(int *)&EntityMemCached[m_customScriptInt];
@@ -147,7 +147,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 				weaponEntityid = *(int *)&EntityMemCached[m_latestPrimaryWeapons + m_allWeapons];
 				weaponEntityid &= 0xFFFF;
 				if (weaponEntityid > 0 && weaponEntityid < 65535) {
-					readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+					readMem(gamePID, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 				}
 				GetEntityTypeStr(weaponEntityPoint, entityInfoNameStr);
 				if (!memcmp("mdl/weapons/", entityInfoNameStr, 12) || !memcmp("mdl/Weapons/", entityInfoNameStr, 12))
@@ -237,14 +237,14 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			lastTime = 0;
 			SuspendThread(hAimThread);
 		}
-		readMem(gameHandle, MySelfPoint, m_vecAimPunch + 160, mySelfData);
-		readMem(gameHandle, aimEntity, m_vecVelocity + 160, aimPlayerData);
+		readMem(gamePID, MySelfPoint, m_vecAimPunch + 160, mySelfData);
+		readMem(gamePID, aimEntity, m_vecVelocity + 160, aimPlayerData);
 		weaponEntityid = *(int*)& mySelfData[m_latestPrimaryWeapons + m_allWeapons];
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
-			readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+			readMem(gamePID, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
-		readMem(gameHandle, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
+		readMem(gamePID, weaponEntityPoint, m_flBulletSpeed + 16, weaponData);
 		bulletSpeed = *(float*)& weaponData[m_flBulletSpeed];
 		if (bulletSpeed < 10) {
 			bulletSpeed = 15000;
@@ -314,14 +314,14 @@ DWORD WINAPI HentaiThread(LPVOID lpParam) {
 	{
 		int weaponEntityid = 0;
 		__int64 weaponEntityPoint = 0;
-		readMem(gameHandle, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
+		readMem(gamePID, MySelfPoint + m_latestPrimaryWeapons, 4, &weaponEntityid);
 		weaponEntityid &= 0xFFFF;
 		if (weaponEntityid > 0 && weaponEntityid < 65535) {
-			readMem(gameHandle, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
+			readMem(gamePID, EntityListPoint + (weaponEntityid << 5), 8, &weaponEntityPoint);
 		}
 		float w = 0.f;
-		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
-		writeMem(gameHandle, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
+		writeMem(gamePID, weaponEntityPoint + m_flWeaponSpread1, 4, &w);
+		writeMem(gamePID, weaponEntityPoint + m_flWeaponSpread2, 4, &w);
 		//float bulletSpeed = 0;
 		//readMem(gameHandle, weaponEntityPoint + m_flBulletSpeed, sizeof(float), &bulletSpeed);
 		//printf("SPEED: %f\n", bulletSpeed);

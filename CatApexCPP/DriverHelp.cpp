@@ -1,9 +1,8 @@
 #include "DriverHelp.h"
-#include "proc_help.h"
 
 
 #define DEVICE_NAME			"\\\\?\\KDSEVDNPSHON"
-	
+
 DWORD IOCTL_IO_MODULE = 0;
 DWORD IOCTL_IO_READ = 0;
 DWORD IOCTL_IO_WRITE = 0;
@@ -13,23 +12,16 @@ DWORD IOCTL_IO_DEBUG_OPENPROCESS = 0;
 DWORD IOCTL_IO_DEBUG_OPENTHREAD = 0;
 DWORD IOCTL_IO_READ_CR3 = 0;
 DWORD IOCTL_IO_WRITE_CR3 = 0;
-DWORD IOCTL_IO_OPEN_PROCESS = 0;
 
 
 
-typedef struct _RWStruct
-{
-	DWORD64 PEP;
-	PVOID BufferAddress;
-	SIZE_T Size;
-	DWORD64 TargetAddress;
-} RWStruct, * PRWStruct;
-
-typedef struct _OPENStruct
+typedef struct rwStruct
 {
 	HANDLE PID;
-	PVOID BufferAddress;
-} OPENStruct, * POPENStruct;
+	PVOID Address;
+	DWORD64 Size;
+	DWORD64 ReadAddress;
+} RWStruct;
 
 typedef struct Dbg_OpenStruct
 {
@@ -64,7 +56,6 @@ bool LoadDrv(LPCSTR drvFile)
 	IOCTL_IO_DEBUG_OPENTHREAD = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1011, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
 	IOCTL_IO_READ_CR3 = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1006, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
 	IOCTL_IO_WRITE_CR3 = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1007, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
-	IOCTL_IO_OPEN_PROCESS = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x1008, METHOD_IN_DIRECT, FILE_ANY_ACCESS);
 	if (connectDrv())
 	{
 		return true;
@@ -106,13 +97,7 @@ HANDLE Debug_OpenThread(HANDLE ThreadID, ULONG Access)
 	return hThread;
 }
 
-void LookupOpenProcess(HANDLE pid, PVOID buff) {
-	OPENStruct os = { pid, buff };
-	DWORD outSize;
-	DeviceIoControl(hDevice, IOCTL_IO_OPEN_PROCESS, &os, sizeof(os), NULL, 0, &outSize, 0);
-}
-
-DWORD64 getBaseModule(DWORD64 proc)
+DWORD64 getBaseModule(HANDLE proc)
 {
 	DWORD64 baseModule = NULL;
 	RWStruct rs = { proc, &baseModule, 8, NULL };
@@ -121,7 +106,7 @@ DWORD64 getBaseModule(DWORD64 proc)
 	return baseModule;
 }
 
-void readMem(DWORD64 proc, DWORD64 addr, int size, PVOID data)
+void readMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
 	RWStruct rs = { proc, data, (DWORD64)size, addr };
 	DWORD outSize;
@@ -129,7 +114,7 @@ void readMem(DWORD64 proc, DWORD64 addr, int size, PVOID data)
 	//ReadProcessMemory(hGameProcess, (LPCVOID)addr, data, size, 0);
 }
 
-void writeMem(DWORD64 proc, DWORD64 addr, int size, PVOID data)
+void writeMem(HANDLE proc, DWORD64 addr, int size, PVOID data)
 {
 	RWStruct rs = { proc, data, (DWORD64)size, addr };
 	DWORD outSize;

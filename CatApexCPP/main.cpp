@@ -13,7 +13,6 @@
 
 using namespace std;
 
-DWORD64 gameHandle;
 HANDLE gamePID;
 __int64 hGameModule;
 int fontSize;
@@ -57,15 +56,7 @@ int main() {
 	printf("进程ID: %p\n", gamePID);
 	//hGameProcess = Debug_OpenProcess(gamePid, PROCESS_ALL_ACCESS);
 	//printf("打开进程 HANDLE: %d\n", hGameProcess);
-	gameHandle = 0;
-	LookupOpenProcess(gamePID, &gameHandle);
-	hGameModule = getBaseModule(gameHandle);
-	printf("内核进程句柄指针: %I64x\n", gameHandle);
-	if (gameHandle == 0)
-	{
-		printf("LOOKUP失败\n");
-		exit(0);
-	}
+	hGameModule = getBaseModule(gamePID);
 	printf("模块地址: %I64x\n", hGameModule);
 	
 	//unloadDrv();
