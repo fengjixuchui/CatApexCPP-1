@@ -20,11 +20,11 @@ void writeVec3D(__int64 addr, Vec3D * vec3D) {
 
 void readPlayerName(int index, char * buff) {
 	__int64 nameArray = 0;
-	readMem(gamePID, hGameModule + NameList, sizeof(nameArray), &nameArray);
-	nameArray = nameArray + index * 8;
 	__int64 namePoint = 0;
-	readMem(gamePID, nameArray + m_nameArrayListSub, sizeof(namePoint), &namePoint);
-	readMem(gamePID, namePoint, 256, buff);
+	nameArray = hGameModule + NameList;
+	readMem(gamePID, nameArray, sizeof(nameArray), &nameArray);
+	namePoint = nameArray + (index * 8) + m_nameArrayListSub;
+	readMem(gamePID, namePoint, 512, buff);
 }
 
 Vec3D GetBonePos(__int64 entity, int ID, Vec3D entityLocal) {

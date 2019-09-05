@@ -15,7 +15,7 @@
 #define CEntityList					0x1f27268//0x1F01B08//0x1F1AC78
 #define CLocalEntity				0x22da978//0x22B5138//0x22CE368
 #define ViewRender					0xcb4a038//0xC57AE90//0xC579FF8
-#define NameList					0xC57BCE0//0xC57AE40
+#define NameList					0x173E498//0xC57BCE0//0xC57AE40
 #define m_location					0x144//0x13C
 #define m_mouse						0x2150//0x21F8//0x21B8
 #define m_renderMouse				0x10
@@ -100,6 +100,12 @@ typedef struct __Vec3D {
 	float y;
 	float z;
 } Vec3D;
+
+typedef struct __DVec3D {
+	double x;
+	double y;
+	double z;
+} DVec3D;
 
 typedef struct __Point_INDEX {
 	__int64 point;

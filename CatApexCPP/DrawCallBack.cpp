@@ -139,10 +139,15 @@ void drawEntity() {
 			int status = *(int*)& entityData[m_bleedoutState];
 			if (status == 0 && (int)entity.distance <= 50)
 			{
+				int blood = *(int*)& entityData[m_iHealth];
+				int armor = *(int*)& entityData[m_shieldHealthMax - 4];
+				if (blood <= 0 || blood > 100 || (blood == 50 && armor == 0)) continue;
 				_50Players++;
 			}
 		}
-		if (ViewW < 0.01) continue;
+		if (ViewW < 0.01) {
+			continue;
+		}
 		ViewW = 1 / ViewW;
 		if (entity.type == 0) {
 			//
@@ -250,7 +255,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 25) {
+				if (entity.distance < 35 && GetAsyncKeyState(VK_CONTROL)) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {
