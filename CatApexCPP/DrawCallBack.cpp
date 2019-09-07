@@ -225,7 +225,7 @@ void drawEntity() {
 				const char* fName = u8"[%d] ¼×:%d Ñª:%d¡¾%s¡¿  %s\0";
 
 				if (entity.point == aimEntity) {
-					readPlayerName(entity.zc, pNameBuff);
+					readMem(gamePID, entity.pName, 256, pNameBuff);
 					sprintf(aimBuff, fName, entity.distance, armor, blood, pNameBuff, entity.WeaponName);
 					aimDraw = { BoxX, BoxY, BoxY1, playerColor, aimBuff };
 				}
@@ -255,7 +255,7 @@ void drawEntity() {
 				tmpPiont.x = CentWindow.x - BoxX;
 				tmpPiont.y = CentWindow.y - BoxY;
 				float showDistance = sqrt(tmpPiont.x * tmpPiont.x + tmpPiont.y * tmpPiont.y);
-				if (entity.distance < 35 && GetAsyncKeyState(VK_CONTROL)) {
+				if (entity.distance < 25 && !GetAsyncKeyState(VK_CONTROL)) {
 					insidePlayer.emplace_back(entity);
 				}
 				if (showDistance < appConfigs.ZiMiaoFanWei && entity.distance < appConfigs.TouShiFanWei) {

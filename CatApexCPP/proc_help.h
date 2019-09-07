@@ -15,12 +15,12 @@
 #define CEntityList					0x1f27268//0x1F01B08//0x1F1AC78
 #define CLocalEntity				0x22da978//0x22B5138//0x22CE368
 #define ViewRender					0xcb4a038//0xC57AE90//0xC579FF8
-#define NameList					0x173E498//0xC57BCE0//0xC57AE40
+#define NameList					0xCB485B8//0xC57BCE0//0xC57AE40
 #define m_location					0x144//0x13C
 #define m_mouse						0x2150//0x21F8//0x21B8
 #define m_renderMouse				0x10
 #define m_renderArray				0x1A93D0
-#define m_nameArrayListSub			0xA40
+#define m_nameArrayListSub			0xA00
 #define m_entityBasePunch			0x213c
 
 #define m_iHealth					0x3E0
@@ -93,6 +93,7 @@ typedef struct EntityStruct {
 	int distance;
 	ApexItem item;
 	const char * WeaponName;
+	__int64 pName;
 } ApexEntity;
 
 typedef struct __Vec3D {

@@ -162,7 +162,7 @@ DWORD WINAPI EntityManager(LPVOID lpParam) {
 						weaponModelStr[i] = newModelName[i];
 					}
 				}
-				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance, {}, GetWeaponName(weaponModelStr) };
+				ApexEntity entity = { cuPoint, 1, 0, NULL, apexName, 255, i, distance, {}, GetWeaponName(weaponModelStr), getNamePoint(i) };
 				tempEntityList.emplace_back(entity);
 				continue;
 			}
@@ -255,7 +255,7 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 		GetBoneArray(aimEntity, &matrix);
 		Vec3D headLocal = CalcBonePos(matrix, Bones::head, entityLocal);
 		Vec3D neckLocal = CalcBonePos(matrix, Bones::neck, entityLocal);
-		Vec3D calcLocal = { (headLocal.x - neckLocal.x) * 0.35f, (headLocal.y - neckLocal.y) * 0.35f, (headLocal.z - neckLocal.z) * 0.35f };
+		Vec3D calcLocal = { (headLocal.x - neckLocal.x) * 0.39f, (headLocal.y - neckLocal.y) * 0.39f, (headLocal.z - neckLocal.z) * 0.39f };
 		Vec3D aimLocal = { headLocal.x - calcLocal.x, headLocal.y - calcLocal.y, headLocal.z - calcLocal.z };
 		if (lastLocal.x == 0.f)
 		{
@@ -284,11 +284,11 @@ DWORD WINAPI SuperAim(LPVOID lpParam) {
 			aimLocal.y += VectorVec3D.y;
 			if (VectorVec3D.z < 100.f)
 			{
-				aimLocal.z += (VectorVec3D.z * 0.70f);
+				aimLocal.z += (VectorVec3D.z * 0.67f);
 			}
 			else
 			{
-				aimLocal.z += (VectorVec3D.z * 0.86f);
+				aimLocal.z += (VectorVec3D.z * 0.88f);
 			}
 		}
 		xx = aimLocal.x - myLocal.x;
